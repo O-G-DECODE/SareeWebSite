@@ -1,0 +1,61 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d72727;
+  padding: 10px 20px;
+}
+
+.logo {
+  color: white;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li {
+  color: white;
+  cursor: pointer;
+}
+
+.nav-links li:hover {
+  text-decoration: underline;
+}
+ /* body css  */
+
+ .body-container {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.welcome-text {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.quote-text {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.explore-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #7d0202;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.explore-btn:hover {
+  background-color: #fd0505;
+}
