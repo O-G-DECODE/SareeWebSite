@@ -3,6 +3,8 @@ import Navbar from "./components/Navbar";
 import Body from "./components/Body";
 import SareeCards from "./components/SareeCards";
 import SareeDetails from "./components/SareeDetails";
+import About from "./components/AboutUS";
+import ContactUs from "./components/ContactUS";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Route path="/sarees" element={<SareeCards />} />
         <Route path="/sarees/:id" element={<SareeDetails />} /> 
       </Routes>
+      <ContactUs />
+      <About />
     </>
   );
 }

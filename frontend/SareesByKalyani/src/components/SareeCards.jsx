@@ -5,7 +5,7 @@ const SareeCards = () => {
     const navigate = useNavigate();
 
   return (
-   <div className="CardMainDiv">
+   <section id="products" className="CardMainDiv">
   {sarees.map((saree) => (
     <div className="card" key={saree.id}
     onClick={() => navigate(`/saree/${saree.id}`)}
@@ -16,7 +16,7 @@ const SareeCards = () => {
       <p>{saree.price}</p>
     </div>
   ))}
-</div>
+</section>
 
   );
 };

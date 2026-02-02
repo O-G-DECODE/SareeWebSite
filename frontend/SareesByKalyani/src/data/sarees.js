@@ -43,7 +43,5 @@ const sarees = [
     image: "/images/ViscousGeorgette/VGone.jpg",
   },
 
-  
-
 ];
 export default sarees;

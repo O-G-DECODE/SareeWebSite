@@ -2,7 +2,7 @@ import SareeCards from "./SareeCards";
 
 const Body = () => {
   return (
-    <div>
+    <section id="home">
       {/* Hero section */}
       <div className="body-container">
         <h1 className="welcome-text">
@@ -24,7 +24,7 @@ const Body = () => {
       <div className="cards-section">
         <SareeCards />
       </div>
-    </div>
+    </section>
   );
 };
 
