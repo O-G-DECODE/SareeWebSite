@@ -23,12 +23,6 @@ const About = () => {
         Kerala, – 680671<br />
         India
       </p>
-
-      <h2>Contact Us</h2>
-      <p>
-        Phone: +91 9744356414<br />
-        Email: sareesbykalyani@gmail.com
-      </p>
     </section>
   );
 };

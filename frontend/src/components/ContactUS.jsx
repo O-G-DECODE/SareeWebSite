@@ -6,30 +6,34 @@ const ContactUs = () => {
       <p>We’d love to hear from you. Reach out to us directly:</p>
 
       <div className="contact-links">
-        <div>
-            <a
-          href="https://wa.me/9744356414"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="contact-btn whatsapp"
-        >
-          💬 Chat on WhatsApp
-        </a>
+  <a
+    href="https://wa.me/919744356414"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="contact-btn"
+  >
+    <img src="images/logo/whatsapp.png" alt="WhatsApp" />
+    <span>Chat on WhatsApp</span>
+  </a>
 
-        </div>
-        <div>
-            <a
-          href="https://www.instagram.com/sarees_by_kalyanii?igsh=MXpodXl0OTN5bzY3"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="contact-btn instagram"
-        >
-          📸 Visit Instagram
-        </a>
+  <a
+    href="https://www.instagram.com/sarees_by_kalyanii?igsh=MXpodXl0OTN5bzY3"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="contact-btn"
+  >
+    <img src="images/logo/instagram.png" alt="Instagram" />
+    <span>Visit Instagram</span>
+  </a>
 
-        </div>
-        
-      </div>
+  <div className="contact-info">
+    <p>
+      Phone: +91 9744356414 <br />
+      Email: sareesbykalyani@gmail.com
+    </p>
+  </div>
+</div>
+
     </section>
   );
 };
