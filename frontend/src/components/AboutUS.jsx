@@ -1,7 +1,7 @@
 const About = () => {
   return (
     <section id="about" className="page">
-      <h1>About Us</h1>
+      <h2>About Us</h2>
 
       <p>
         Sarees By Kalyani is dedicated to bringing you authentic,

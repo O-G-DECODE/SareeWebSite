@@ -112,20 +112,20 @@
 
 .welcome-text {
   font-size: 36px;
-  color: #175703;
+  color: #699367;
   margin-bottom: 10px;
 }
 
 .quote-text {
   font-size: 18px;
-  color: #f38686;
+  color: #000000;
   margin-bottom: 20px;
 }
 
 .explore-btn {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #09422c;
+  background-color: #5F6F63;
   color: white;
   border: none;
   border-radius: 5px;
@@ -133,7 +133,7 @@
 }
 
 .explore-btn:hover {
-  background-color: #fd0505;
+  background-color: #07430e;
 }
 /* scroll bar for */
 .CardMainDiv {

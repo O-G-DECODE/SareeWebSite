@@ -16,8 +16,8 @@ function App() {
         <Route path="/sarees" element={<SareeCards />} />
         <Route path="/sarees/:id" element={<SareeDetails />} /> 
       </Routes>
-      <ContactUs />
       <About />
+      <ContactUs />
     </>
   );
 }
