@@ -1,0 +1,79 @@
+.admin-container {
+  display: flex;
+  height: 100vh;
+  background: #f5f1f1;
+}
+
+/* Top bar */
+.admin-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: hwb(149 16% 52%);
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 1000;
+}
+
+.menu-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-right: 16px;
+}
+
+/* Drawer */
+.admin-drawer {
+  position: fixed;
+  top: 60px;
+  left: -240px;
+  width: 240px;
+  height: calc(100vh - 60px);
+  background: hwb(0 98% 2%);
+  padding: 20px;
+  transition: left 0.3s ease;
+  z-index: 1001;
+}
+
+.admin-drawer.open {
+  left: 0;
+}
+
+.admin-drawer button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #0ba26d;
+  color: rgb(255, 255, 255);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-drawer button:hover {
+  background: #15711a;
+}
+
+/* Content */
+.admin-content {
+  padding: 20px;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+/* Overlay for mobile */
+.overlay {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 60px);
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}

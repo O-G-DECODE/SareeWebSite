@@ -41,6 +41,7 @@
   font-size: 24px;
   background: none;
   border: none;
+  color: #000000;
   cursor: pointer;
 }
 
@@ -64,7 +65,7 @@
   left: -280px;
   width: 280px;
   height: 100%;
-  background: white;
+  background: rgb(243, 236, 236);
   padding: 20px;
   transition: left 0.3s ease;
   z-index: 1100;

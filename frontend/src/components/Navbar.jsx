@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,6 +43,7 @@ const Navbar = () => {
           <li><a href="#offers" onClick={() => setIsOpen(false)}>Offers</a></li>
           <li><a href="#about" onClick={() => setIsOpen(false)}>About</a></li>
           <li><a href="#contact" onClick={() => setIsOpen(false)}>Contact</a></li>
+         <li onClick={() => setIsOpen(false)}> <Link to="/login">Admin Login</Link></li>
         </ul>
       </aside>
 
