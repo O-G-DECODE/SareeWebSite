@@ -10,6 +10,7 @@ import AdminHome from "./components/admin/AdminHome";
 import AdminAddSaree from "./components/admin/AdminAddSaree";
 import AdminNavbar from "./components/admin/AdminNavbar";
 import AddCategory from "./components/admin/AddCategory";
+import EditCategory from "./components/admin/EditCategory";
 
 function App() {
   const location = useLocation();
@@ -33,6 +34,8 @@ function App() {
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-home/AddSaree" element={<AdminAddSaree />} />
           <Route path="/admin-home/AddCategory" element={<AddCategory />} />
+          <Route path="/admin-home/EditCategory" element={<EditCategory />} />
+
         </Route>
         
       </Routes>

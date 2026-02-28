@@ -1,23 +1,35 @@
 import { useNavigate } from "react-router-dom";
-import sarees  from "../data/sarees";
+import { useEffect, useState } from "react";
 
 const SareeCards = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Data from backend:", data);
+        setCategories(data);
+      })
+      .catch((err) => console.log("Error:", err));
+  }, []);
 
   return (
-   <section id="products" className="CardMainDiv">
-  {sarees.map((saree) => (
-    <div className="card" key={saree.id}
-    onClick={() => navigate(`/saree/${saree.id}`)}
-    style={{ cursor: "pointer" }}
-    >
-      <img src={saree.image} className="ImageClass" />
-      <h4>{saree.name}</h4>
-      <p>{saree.price}</p>
-    </div>
-  ))}
-</section>
-
+    <section className="CardMainDiv">
+      {categories.map((item) => (
+        <div
+          className="card"
+          key={item._id}
+          onClick={() => navigate(`/saree/${item._id}`)}
+          style={{ cursor: "pointer" }}
+        >
+          <img src={item.image} alt={item.name} width="200" />
+          <h4>{item.name}</h4>
+          <p>{item.description}</p>
+        </div>
+      ))}
+    </section>
   );
 };
 

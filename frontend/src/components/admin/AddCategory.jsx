@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./AdminAddSaree.css";
 
 function AddCategory() {
   const [name, setName] = useState("");
@@ -8,40 +7,42 @@ function AddCategory() {
   const [isActive, setIsActive] = useState(true);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const bodyData = {
-    name,
-    description,
-    image: image ? image.name : "",
-    isActive,
+    console.log("Submitting form...");
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("image", image);
+    formData.append("isActive", isActive);
+
+    try {
+      const res = await fetch(
+        "http://localhost:3000/admin-home/AddCategory",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      alert(data.message);
+
+    } catch (error) {
+      console.error(error);
+      alert("Error adding category");
+    }
   };
 
-  try {
-    const res = await fetch("http://localhost:3000/admin-home/AddCategory", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyData),
-    });
-
-    const data = await res.json();
-    alert(data.message || "Category Added");
-
-  } catch (error) {
-    console.log(error);
-    alert("Error adding category");
-  }
-};
-
   return (
-    <div className="admin-form-container">
+    <div>
       <h2>Add Category</h2>
 
-      <form className="admin-form" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
+          name="name"
           placeholder="Category Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -50,6 +51,7 @@ function AddCategory() {
 
         <input
           type="text"
+          name="description"
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -57,13 +59,16 @@ function AddCategory() {
 
         <input
           type="file"
+          name="image"
           accept="image/*"
           onChange={(e) => setImage(e.target.files[0])}
+          required
         />
 
         <select
+          name="isActive"
           value={isActive}
-          onChange={(e) => setIsActive(e.target.value === "true")}
+          onChange={(e) => setIsActive(e.target.value)}
         >
           <option value="true">Active</option>
           <option value="false">Inactive</option>

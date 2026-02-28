@@ -27,6 +27,9 @@ function AdminHome() {
         <button onClick={() => goTo("/admin-home/AddCategory")}>
           Manage Categories
         </button>
+        <button onClick={() => goTo("/admin-home/EditCategory")}>
+          Manage Categories
+        </button>
         <button onClick={() => goTo("/admin-home/AddSaree")}>
           Add Saree
         </button>

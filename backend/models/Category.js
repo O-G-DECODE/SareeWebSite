@@ -4,17 +4,27 @@ const categorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Category name is required"],
       unique: true,
-      trim: true
+      trim: true,
+      minlength: [2, "Name must be at least 2 characters"],
+      maxlength: [100, "Name cannot exceed 100 characters"]
     },
 
     description: {
-      type: String
+      type: String,
+      trim: true,
+      maxlength: [500, "Description cannot exceed 500 characters"]
     },
 
     image: {
-      type: String, 
+      type: String,
+      required: false
+    },
+
+    // 🔥 Important for deleting/replacing image in Cloudinary
+    imagePublicId: {
+      type: String,
       required: false
     },
 
@@ -23,7 +33,12 @@ const categorySchema = new mongoose.Schema(
       default: true
     }
   },
-  { timestamps: true }
+  { 
+    timestamps: true 
+  }
 );
+
+// Optional: Make name case-insensitive unique
+categorySchema.index({ name: 1 }, { unique: true });
 
 module.exports = mongoose.model("Category", categorySchema);

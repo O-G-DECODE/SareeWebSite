@@ -1,26 +1,55 @@
-require("dotenv").config()
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
-const hash = bcrypt.hashSync("qwerty", 10);
-console.log(hash)
-const Admin = require('./models/Admin');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+
+const Admin = require("./models/Admin");
 const Category = require("./models/Category");
+
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGO_URI)
-.then(()=> console.log('Mongo is connected'))
-.catch((err)=> console.log(err))
+// ===============================
+// ✅ Cloudinary Config
+// ===============================
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
+// ===============================
+// ✅ Multer Memory Storage
+// ===============================
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// ===============================
+// ✅ Middleware
+// ===============================
 app.use(cors());
 app.use(express.json());
 
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+// ===============================
+// ✅ MongoDB Connection
+// ===============================
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.log("❌ MongoDB error:", err));
 
+
+// ===============================
+// ✅ LOGIN ROUTE
+// ===============================
+app.post("/login", async (req, res) => {
   try {
+    const { email, password } = req.body;
+
     const admin = await Admin.findOne({ email });
     if (!admin) {
       return res.status(401).json({
@@ -42,7 +71,9 @@ app.post("/login", async (req, res) => {
       message: "Login Successful",
       adminId: admin._id,
     });
+
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -50,52 +81,152 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Add Category Saree, 
-app.post('/admin-home/AddCategory', async (req, res) => {
+
+// ===============================
+// ✅ GET ALL CATEGORIES
+// ===============================
+app.get("/", async (req, res) => {
   try {
-    console.log(req.body);
+    const categories = await Category.find({ isActive: true });
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-    const { name, description, image, isActive } = req.body;
+// ===============================
+// ✅ ADD CATEGORY (Cloudinary)
+// ===============================
+app.post("/admin-home/AddCategory", upload.single("image"), async (req, res) => {
+  try {
+    console.log("🔥 Route Hit");
 
-    const existingCategory = await Category.findOne({ name });
+    const { name, description, isActive } = req.body;
 
-    if (existingCategory) {
-      return res.status(400).json({
-        success: false,
-        message: "Category already exists",
-      });
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
     }
+
+    // Case-insensitive duplicate check (better)
+    const existing = await Category.findOne({ 
+      name: { $regex: new RegExp("^" + name + "$", "i") }
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: "Category already exists" });
+    }
+
+    const uploadImage = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "saree_categories" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+    const result = await uploadImage();
 
     const newCategory = new Category({
       name,
       description,
-      image,
-      isActive
+      image: result.secure_url,
+      imagePublicId: result.public_id, // ✅ VERY IMPORTANT
+      isActive: isActive === "true" || isActive === true,
     });
 
     await newCategory.save();
 
     res.status(201).json({
-      success: true,
       message: "Category added successfully",
-      data: newCategory
+      data: newCategory,
     });
 
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server Error"
-    });
+    console.error("ADD CATEGORY ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
-app.post('/admin-home/AddSaree', (req,res)=> {
-  try{
-    const {name,price,image ,color,material,sareeType,category,videoId,stock,isActive}
-  }
-})
+// ===============================
 
+// ===============================
+// ✅ UPDATE CATEGORY (Replace Image Supported)
+// ===============================
+app.put("/admin-home/updateCategory/:id", upload.single("image"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, isActive } = req.body;
+
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // 🔹 Check duplicate name (case-insensitive, excluding current category)
+    if (name) {
+      const existing = await Category.findOne({
+        name: { $regex: new RegExp("^" + name + "$", "i") },
+        _id: { $ne: id }
+      });
+
+      if (existing) {
+        return res.status(400).json({ message: "Category name already exists" });
+      }
+
+      category.name = name.trim();
+    }
+
+    // 🔹 Update description
+    if (description !== undefined) {
+      category.description = description;
+    }
+
+    // 🔹 Update status
+    if (isActive !== undefined) {
+      category.isActive = isActive === "true" || isActive === true;
+    }
+
+    // 🔹 If new image uploaded → delete old + upload new
+    if (req.file) {
+
+      // Delete old image from Cloudinary
+      if (category.imagePublicId) {
+        await cloudinary.uploader.destroy(category.imagePublicId);
+      }
+
+      const uploadImage = () =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "saree_categories" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(req.file.buffer);
+        });
+
+      const result = await uploadImage();
+
+      category.image = result.secure_url;
+      category.imagePublicId = result.public_id;
+    }
+
+    await category.save();
+
+    res.status(200).json({
+      message: "Category updated successfully",
+      data: category,
+    });
+
+  } catch (error) {
+    console.error("UPDATE CATEGORY ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

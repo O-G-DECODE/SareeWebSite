@@ -34,6 +34,10 @@ function AdminNavbar() {
           Manage Categories
         </button>
 
+        <button onClick={() => goTo("/admin-home/EditCategory")}>
+          Edit Categories
+        </button>
+
         <button onClick={() => goTo("/admin-home/AddSaree")}>
           Add Saree
         </button>
