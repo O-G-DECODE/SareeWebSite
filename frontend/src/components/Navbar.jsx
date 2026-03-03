@@ -17,7 +17,7 @@ const Navbar = () => {
         </button>
         <div className="brand">
   <img
-    src="images/logo/logo.png"
+    src="https://res.cloudinary.com/dlmwgotxp/image/upload/v1772525943/logo_wffhb4.png"
     alt="Sarees By Kalyani Logo"
     className="brand-logo"
   />

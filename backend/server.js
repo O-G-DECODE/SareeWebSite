@@ -9,6 +9,7 @@ const cloudinary = require("cloudinary").v2;
 
 const Admin = require("./models/Admin");
 const Category = require("./models/Category");
+const Saree = require("./models/Sarees")
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -91,6 +92,26 @@ app.get("/", async (req, res) => {
     res.json(categories);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ===============================
+// ✅ GET SAREES BY CATEGORY (Public)
+// ===============================
+app.get("/sarees/category/:categoryId", async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const sarees = await Saree.find({
+      category: categoryId,
+      isActive: true
+    }).sort({ createdAt: -1 });
+
+    res.json(sarees);
+
+  } catch (error) {
+    console.error("GET SAREES ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -224,6 +245,177 @@ app.put("/admin-home/updateCategory/:id", upload.single("image"), async (req, re
 
   } catch (error) {
     console.error("UPDATE CATEGORY ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// ===============================
+// ✅ ADD SAREE
+// ===============================
+app.post("/admin-home/addSaree", upload.single("image"), async (req, res) => {
+  try {
+    const {
+      name,
+      price,
+      color,
+      material,
+      sareeType,
+      category,
+      videoId,
+      stock
+    } = req.body;
+
+    // 🔹 Check duplicate name
+    const existing = await Saree.findOne({
+      name: { $regex: new RegExp("^" + name + "$", "i") }
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: "Saree already exists" });
+    }
+
+    // 🔹 Upload image to Cloudinary
+    const uploadImage = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "sarees" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+    const result = await uploadImage();
+
+    const newSaree = new Saree({
+      name: name.trim(),
+      price,
+      image: result.secure_url,
+      imagePublicId: result.public_id, // 🔥 important
+      color,
+      material,
+      sareeType,
+      category,
+      videoId,
+      stock,
+      isActive: true
+    });
+
+    await newSaree.save();
+
+    res.status(201).json({
+      message: "Saree added successfully",
+      data: newSaree
+    });
+
+  } catch (error) {
+    console.error("ADD SAREE ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// ===============================
+// ✅ GET SAREES BY CATEGORY
+// ===============================
+app.get("/admin-home/sarees/:categoryId", async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const sarees = await Saree.find({
+      category: categoryId
+    }).sort({ createdAt: -1 });
+
+    res.json(sarees);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// ===============================
+// ✅ UPDATE SAREE
+// ===============================
+app.put("/admin-home/updateSaree/:id", upload.single("image"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      price,
+      color,
+      material,
+      sareeType,
+      category,
+      videoId,
+      stock,
+      isActive
+    } = req.body;
+
+    const saree = await Saree.findById(id);
+    if (!saree) {
+      return res.status(404).json({ message: "Saree not found" });
+    }
+
+    // 🔹 Duplicate check (excluding current)
+    if (name) {
+      const existing = await Saree.findOne({
+        name: { $regex: new RegExp("^" + name + "$", "i") },
+        _id: { $ne: id }
+      });
+
+      if (existing) {
+        return res.status(400).json({ message: "Saree name already exists" });
+      }
+
+      saree.name = name.trim();
+    }
+
+    saree.price = price ?? saree.price;
+    saree.color = color ?? saree.color;
+    saree.material = material ?? saree.material;
+    saree.sareeType = sareeType ?? saree.sareeType;
+    saree.category = category ?? saree.category;
+    saree.videoId = videoId ?? saree.videoId;
+    saree.stock = stock ?? saree.stock;
+
+    if (isActive !== undefined) {
+      saree.isActive = isActive === "true" || isActive === true;
+    }
+
+    // 🔥 Replace Image
+    // 🔥 Replace Image (delete old + upload new)
+if (req.file) {
+
+  // 🔴 Delete old image from Cloudinary
+  if (saree.imagePublicId) {
+    await cloudinary.uploader.destroy(saree.imagePublicId);
+  }
+
+  // 🔵 Upload new image
+  const uploadImage = () =>
+    new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "sarees" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+  const result = await uploadImage();
+
+  saree.image = result.secure_url;
+  saree.imagePublicId = result.public_id; // 🔥 store new public id
+}
+    await saree.save();
+
+    res.json({ message: "Saree updated successfully", data: saree });
+
+  } catch (error) {
+    console.error("UPDATE SAREE ERROR:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });

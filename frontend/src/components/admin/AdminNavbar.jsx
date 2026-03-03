@@ -31,16 +31,18 @@ function AdminNavbar() {
         </button>
 
         <button onClick={() => goTo("/admin-home/AddCategory")}>
-          Manage Categories
+          Add Categories
         </button>
 
         <button onClick={() => goTo("/admin-home/EditCategory")}>
           Edit Categories
         </button>
 
-        <button onClick={() => goTo("/admin-home/AddSaree")}>
-          Add Saree
+        <button onClick={() => goTo("/admin-home/updateSaree")}>
+          Update Saree
         </button>
+
+         
       </div>
 
       {/* Overlay */}

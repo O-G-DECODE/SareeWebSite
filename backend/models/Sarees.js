@@ -18,6 +18,10 @@ const sareeSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    imagePublicId: {
+       type: String,
+       required: true
+},
 
     // 🎨 Color
     color: {
@@ -42,7 +46,9 @@ const sareeSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      required: true
+      required: true,
+      index: true // 🔥 makes filtering by category faster
+
     },
 
     // 🎥 Optional YouTube video

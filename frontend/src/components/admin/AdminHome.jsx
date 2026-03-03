@@ -24,14 +24,21 @@ function AdminHome() {
       {/* Drawer */}
       <div className={`admin-drawer ${drawerOpen ? "open" : ""}`}>
         <button onClick={() => goTo("/admin-home")}>Dashboard</button>
+
         <button onClick={() => goTo("/admin-home/AddCategory")}>
-          Manage Categories
+          Add Categories
         </button>
+
         <button onClick={() => goTo("/admin-home/EditCategory")}>
-          Manage Categories
+          Edit Categories
         </button>
-        <button onClick={() => goTo("/admin-home/AddSaree")}>
+
+        <button onClick={() => goTo("/admin-home/addSaree")}>
           Add Saree
+        </button>
+
+        <button onClick={() => goTo("/admin-home/updateSaree")}>
+          Update Saree
         </button>
       </div>
 

@@ -69,7 +69,7 @@ function EditCategory() {
   };
 
   return (
-    <div>
+    <div className="admin-form-container">
       <h2>Edit Category</h2>
 
       {/* Dropdown */}
@@ -83,7 +83,7 @@ function EditCategory() {
       </select>
 
       {selectedId && (
-        <form onSubmit={handleSubmit}>
+        <form className="admin-form" onSubmit={handleSubmit}>
           <input
             type="text"
             value={name}

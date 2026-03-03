@@ -3,14 +3,16 @@ import Navbar from "./components/Navbar";
 import Body from "./components/Body";
 import SareeCards from "./components/SareeCards";
 import SareeDetails from "./components/SareeDetails";
-import About from "./components/AboutUS";
-import ContactUs from "./components/ContactUS";
+// import About from "./components/AboutUS";
+// import ContactUs from "./components/ContactUS";
 import Login from "./components/admin/Login";
 import AdminHome from "./components/admin/AdminHome";
 import AdminAddSaree from "./components/admin/AdminAddSaree";
 import AdminNavbar from "./components/admin/AdminNavbar";
 import AddCategory from "./components/admin/AddCategory";
 import EditCategory from "./components/admin/EditCategory";
+import EditSaree from "./components/admin/EditSaree";
+import CategorySarees from "./components/CategorySarees";
 
 function App() {
   const location = useLocation();
@@ -30,11 +32,13 @@ function App() {
         <Route path="/sarees" element={<SareeCards />} />
         <Route path="/sarees/:id" element={<SareeDetails />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/saree/:id" element={<CategorySarees />} />
         <Route path="/admin-home" element={<AdminNavbar />}>
           <Route path="/admin-home" element={<AdminHome />} />
           <Route path="/admin-home/AddSaree" element={<AdminAddSaree />} />
           <Route path="/admin-home/AddCategory" element={<AddCategory />} />
           <Route path="/admin-home/EditCategory" element={<EditCategory />} />
+          <Route path="/admin-home/updateSaree" element={<EditSaree />} />
 
         </Route>
         

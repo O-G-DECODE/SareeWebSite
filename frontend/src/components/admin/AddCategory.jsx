@@ -36,10 +36,10 @@ function AddCategory() {
   };
 
   return (
-    <div>
+    <div className="admin-form-container"> 
       <h2>Add Category</h2>
 
-      <form onSubmit={handleSubmit}>
+      <form  className="admin-form" onSubmit={handleSubmit}>
         <input
           type="text"
           name="name"
