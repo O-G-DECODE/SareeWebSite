@@ -54,7 +54,7 @@ mongoose
 // ===============================
 // ✅ LOGIN ROUTE
 // ===============================
-app.post("https://sareewebsite.onrender.com/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
