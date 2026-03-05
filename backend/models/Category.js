@@ -22,7 +22,6 @@ const categorySchema = new mongoose.Schema(
       required: false
     },
 
-    // 🔥 Important for deleting/replacing image in Cloudinary
     imagePublicId: {
       type: String,
       required: false
@@ -37,8 +36,5 @@ const categorySchema = new mongoose.Schema(
     timestamps: true 
   }
 );
-
-// Optional: Make name case-insensitive unique
-categorySchema.index({ name: 1 }, { unique: true });
 
 module.exports = mongoose.model("Category", categorySchema);
