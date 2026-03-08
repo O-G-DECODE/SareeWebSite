@@ -5,8 +5,11 @@ const SareeCards = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
+
   useEffect(() => {
-    fetch("http://localhost:3000/")
+    fetch("${API_URL}")
       .then((res) => res.json())
       .then((data) => {
         console.log("Data from backend:", data);

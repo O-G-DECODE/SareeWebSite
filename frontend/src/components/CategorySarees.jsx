@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 const CategorySarees = () => {
   const { id } = useParams();
   const [sarees, setSarees] = useState([]);
+const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    fetch(`http://localhost:3000/sarees/category/${id}`)
+    fetch(`${API_URL}/sarees/category/${id}`)
       .then(res => res.json())
       .then(data => setSarees(data))
       .catch(err => console.log(err));

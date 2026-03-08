@@ -5,6 +5,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const API_URL = process.env.REACT_APP_API_URL;
+
 
   const navigate = useNavigate(); // 👈 add this
 
@@ -12,7 +14,7 @@ function Login() {
     e.preventDefault();
 
     try {
-  const response = await fetch("https://sareewebsite.onrender.com/login", {
+  const response = await fetch("${API_URL}/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
