@@ -2,7 +2,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Body from "./components/Body";
 import SareeCards from "./components/SareeCards";
-import SareeDetails from "./components/SareeDetails";
+// import SareeDetails from "./components/SareeDetails";
 // import About from "./components/AboutUS";
 // import ContactUs from "./components/ContactUS";
 import Login from "./components/admin/Login";
