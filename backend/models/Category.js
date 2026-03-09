@@ -39,6 +39,5 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Optional: Make name case-insensitive unique
-categorySchema.index({ name: 1 }, { unique: true });
 
 module.exports = mongoose.model("Category", categorySchema);
