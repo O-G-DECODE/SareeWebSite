@@ -30,7 +30,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Body />} />
         <Route path="/sarees" element={<SareeCards />} />
-        <Route path="/sarees/:id" element={<SareeDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/saree/:id" element={<CategorySarees />} />
         <Route path="/admin-home" element={<AdminNavbar />}>
