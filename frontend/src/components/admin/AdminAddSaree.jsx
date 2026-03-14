@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./AdminAddSaree.css";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function AdminAddSaree() {
   const [name, setName] = useState("");
@@ -16,7 +17,7 @@ function AdminAddSaree() {
 
   // 🔥 Fetch categories for dropdown
   useEffect(() => {
-    fetch("http://localhost:3000/")
+    fetch(`${API_URL}/`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));

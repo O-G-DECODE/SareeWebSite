@@ -1,4 +1,5 @@
 import { useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function AddCategory() {
   const [name, setName] = useState("");
@@ -19,7 +20,7 @@ function AddCategory() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/admin-home/AddCategory",
+        `${API_URL}/admin-home/AddCategory`,
         {
           method: "POST",
           body: formData,

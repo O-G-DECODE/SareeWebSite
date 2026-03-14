@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function EditCategory() {
   const [categories, setCategories] = useState([]);
@@ -12,7 +13,7 @@ function EditCategory() {
 
   // 🔥 Fetch all categories for dropdown
   useEffect(() => {
-    fetch("http://localhost:3000/")
+    fetch("https://sareewebsite.onrender.com/")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
@@ -52,7 +53,7 @@ function EditCategory() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/admin-home/updateCategory/${selectedId}`,
+        `https://sareewebsite.onrender.com/admin-home/updateCategory/${selectedId}`,
         {
           method: "PUT",
           body: formData,

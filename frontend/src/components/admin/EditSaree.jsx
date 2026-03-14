@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function EditSaree() {
   const [categories, setCategories] = useState([]);
@@ -26,7 +27,7 @@ function EditSaree() {
 
   // 🔥 Fetch categories
   useEffect(() => {
-    fetch("http://localhost:3000/")
+    fetch(`${API_URL}/`)
       .then(res => res.json())
       .then(data => setCategories(data));
   }, []);
@@ -35,7 +36,7 @@ function EditSaree() {
   useEffect(() => {
     if (!selectedCategory) return;
 
-    fetch(`http://localhost:3000/admin-home/sarees/${selectedCategory}`)
+    fetch(`${API_URL}/admin-home/sarees/${selectedCategory}`)
       .then(res => res.json())
       .then(data => setSarees(data));
   }, [selectedCategory]);
@@ -75,8 +76,7 @@ function EditSaree() {
       data.append("image", image);
     }
 
-    const res = await fetch(
-      `http://localhost:3000/admin-home/updateSaree/${selectedSareeId}`,
+    const res = await fetch(`${API_URL}/admin-home/updateSaree/${selectedSareeId}`,
       {
         method: "PUT",
         body: data

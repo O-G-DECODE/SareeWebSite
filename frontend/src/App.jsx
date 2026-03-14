@@ -33,7 +33,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/saree/:id" element={<CategorySarees />} />
         <Route path="/admin-home" element={<AdminNavbar />}>
-          <Route path="/admin-home" element={<AdminHome />} />
+          <Route path="/admin-home" element={<AdminAddSaree />} />
           <Route path="/admin-home/AddSaree" element={<AdminAddSaree />} />
           <Route path="/admin-home/AddCategory" element={<AddCategory />} />
           <Route path="/admin-home/EditCategory" element={<EditCategory />} />
