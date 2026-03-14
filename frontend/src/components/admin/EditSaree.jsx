@@ -76,7 +76,7 @@ function EditSaree() {
       data.append("image", image);
     }
 
-    const res = await fetch(`${API_URL}/admin-home/updateSaree/${selectedSareeId}`,
+    const res = await fetch(`"${API_URL}"/admin-home/updateSaree/${selectedSareeId}`,
       {
         method: "PUT",
         body: data
