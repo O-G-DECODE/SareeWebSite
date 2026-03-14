@@ -36,6 +36,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
+      
       "https://sareewebsite.vercel.app"    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
