@@ -98,7 +98,7 @@ app.post("/login", async (req, res) => {
 // ===============================
 app.get("/", async (req, res) => {
   try {
-    const categories = await Category.find({ isActive: true });
+    const categories = await Category.find();
     res.json(categories);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -283,9 +283,10 @@ app.delete("/admin-home/deleteCategory/:id", async (req, res) => {
 
     // 🔵 Delete image from Cloudinary
     if (category.imagePublicId) {
-      await cloudinary.uploader.destroy(category.imagePublicId);
-    }
-
+  await cloudinary.uploader.destroy(category.imagePublicId, {
+    resource_type: "image"
+  });
+}
     await Category.findByIdAndDelete(id);
 
     res.json({ message: "Category deleted successfully" });
@@ -377,9 +378,10 @@ app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
 
     // 🔴 Delete image from Cloudinary
     if (saree.imagePublicId) {
-      await cloudinary.uploader.destroy(saree.imagePublicId);
-    }
-
+  await cloudinary.uploader.destroy(saree.imagePublicId, {
+    resource_type: "image"
+  });
+}
     await Saree.findByIdAndDelete(id);
 
     res.json({ message: "Saree deleted successfully" });
