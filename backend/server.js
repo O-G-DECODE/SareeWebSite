@@ -37,7 +37,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://sareewebsite.vercel.app",
+      "https://sareesbykalyani.vercel.app",
       "https://sareesbykalyani-kf0fryilm-o-g-decodes-projects.vercel.app" 
       ],
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -91,19 +91,22 @@ app.post("/login", async (req, res) => {
     });
   }
 });
-
-
+// ===============================
+// ✅ GET ALL CATEGORIES FOR ADMIN
+// ===============================
+app.get("/categories", async (req, res) => {
+     try { const categories = await Category.find();
+    res.json(categories); } 
+    catch (err) { res.status(500).json({ message: "Server error" });
+   } });
 // ===============================
 // ✅ GET ALL CATEGORIES
 // ===============================
 app.get("/", async (req, res) => {
-  try {
-    const categories = await Category.find();
-    res.json(categories);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+   try { const categories = await Category.find({ isActive: true });
+    res.json(categories); } 
+    catch (err) { res.status(500).json({ message: "Server error" });
+   } });
 
 // ===============================
 // ✅ GET SAREES BY CATEGORY (Public)
