@@ -37,7 +37,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://sareesbykalyani.vercel.app",
+      "https://sareewebsite.vercel.app",
       "https://sareesbykalyani-kf0fryilm-o-g-decodes-projects.vercel.app" 
       ],
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -260,6 +260,43 @@ app.put("/admin-home/updateCategory/:id", upload.single("image"), async (req, re
 });
 
 // ===============================
+// ✅ DELETE CATEGORY
+// ===============================
+app.delete("/admin-home/deleteCategory/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findById(id);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // 🔴 Check if sarees exist in this category
+    const sarees = await Saree.find({ category: id });
+
+    if (sarees.length > 0) {
+      return res.status(400).json({
+        message: "Cannot delete category with existing sarees"
+      });
+    }
+
+    // 🔵 Delete image from Cloudinary
+    if (category.imagePublicId) {
+      await cloudinary.uploader.destroy(category.imagePublicId);
+    }
+
+    await Category.findByIdAndDelete(id);
+
+    res.json({ message: "Category deleted successfully" });
+
+  } catch (error) {
+    console.error("DELETE CATEGORY ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// ===============================
 // ✅ ADD SAREE
 // ===============================
 app.post("/admin-home/addSaree", upload.single("image"), async (req, res) => {
@@ -325,7 +362,33 @@ app.post("/admin-home/addSaree", upload.single("image"), async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+// ===============================
+// ✅ DELETE SAREE
+// ===============================
+app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const saree = await Saree.findById(id);
+
+    if (!saree) {
+      return res.status(404).json({ message: "Saree not found" });
+    }
+
+    // 🔴 Delete image from Cloudinary
+    if (saree.imagePublicId) {
+      await cloudinary.uploader.destroy(saree.imagePublicId);
+    }
+
+    await Saree.findByIdAndDelete(id);
+
+    res.json({ message: "Saree deleted successfully" });
+
+  } catch (error) {
+    console.error("DELETE SAREE ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 // ===============================
 // ✅ GET SAREES BY CATEGORY
 // ===============================
