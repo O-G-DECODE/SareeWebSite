@@ -44,7 +44,7 @@ function AdminAddSaree() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/admin-home/addSaree",
+        `${API_URL}/admin-home/addSaree`,
         {
           method: "POST",
           body: formData,
