@@ -11,10 +11,8 @@ function AdminNavbar() {
     setDrawerOpen(false);
   };
 
-  // Logout function
+  // Logout
   const handleLogout = () => {
-    // Optionally clear any auth tokens here, e.g.,
-    // localStorage.removeItem("token");
     window.location.href = "https://sareesbykalyani.vercel.app/";
   };
 
@@ -33,35 +31,34 @@ function AdminNavbar() {
 
       {/* Drawer */}
       <div className={`admin-drawer ${drawerOpen ? "open" : ""}`}>
+
         <button onClick={() => goTo("/admin-home")}>
           Dashboard
         </button>
 
-        <button onClick={() => goTo("/admin-home/AddCategory")}>
-          Add Categories
+        <button onClick={() => goTo("/admin-home/add-category")}>
+          Add Category
         </button>
 
-        <button onClick={() => goTo("/admin-home/EditCategory")}>
-          Edit Categories
+        <button onClick={() => goTo("/admin-home/manage-category")}>
+          Manage Category
         </button>
 
-        <button onClick={() => goTo("/admin-home/updateSaree")}>
-          Update Saree
+        <button onClick={() => goTo("/admin-home/add-saree")}>
+          Add Saree
         </button>
 
-        {/* New Buttons */}
-        <button onClick={() => goTo("/admin-home/DeleteCategory")}>
-          Delete Category
+        <button onClick={() => goTo("/admin-home/manage-saree")}>
+          Manage Saree
         </button>
 
-        <button onClick={() => goTo("/admin-home/DeleteSaree")}>
-          Delete Saree
-        </button>
-
-        {/* Logout */}
-        <button onClick={handleLogout} style={{ color: "red" }}>
+        <button
+          onClick={handleLogout}
+          style={{ color: "red", marginTop: "20px" }}
+        >
           Logout
         </button>
+
       </div>
 
       {/* Overlay */}
