@@ -11,6 +11,13 @@ function AdminNavbar() {
     setDrawerOpen(false);
   };
 
+  // Logout function
+  const handleLogout = () => {
+    // Optionally clear any auth tokens here, e.g.,
+    // localStorage.removeItem("token");
+    window.location.href = "https://sareesbykalyani.vercel.app/";
+  };
+
   return (
     <div className="admin-container">
       {/* Top Bar */}
@@ -42,7 +49,19 @@ function AdminNavbar() {
           Update Saree
         </button>
 
-         
+        {/* New Buttons */}
+        <button onClick={() => goTo("/admin-home/DeleteCategory")}>
+          Delete Category
+        </button>
+
+        <button onClick={() => goTo("/admin-home/DeleteSaree")}>
+          Delete Saree
+        </button>
+
+        {/* Logout */}
+        <button onClick={handleLogout} style={{ color: "red" }}>
+          Logout
+        </button>
       </div>
 
       {/* Overlay */}

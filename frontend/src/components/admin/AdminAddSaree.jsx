@@ -14,8 +14,9 @@ function AdminAddSaree() {
   const [stock, setStock] = useState("");
 
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false); // loading state
 
-  // 🔥 Fetch categories for dropdown
+  // Fetch categories for dropdown
   useEffect(() => {
     fetch(`${API_URL}/`)
       .then((res) => res.json())
@@ -25,11 +26,14 @@ function AdminAddSaree() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // prevent multiple clicks
 
     if (!image) {
       alert("Please upload an image");
       return;
     }
+
+    setLoading(true); // start spinner
 
     const formData = new FormData();
     formData.append("name", name);
@@ -43,13 +47,10 @@ function AdminAddSaree() {
     formData.append("stock", stock);
 
     try {
-      const res = await fetch(
-        `${API_URL}/admin-home/addSaree`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch(`${API_URL}/admin-home/addSaree`, {
+        method: "POST",
+        body: formData,
+      });
 
       const data = await res.json();
       alert(data.message);
@@ -64,10 +65,11 @@ function AdminAddSaree() {
       setCategory("");
       setVideoId("");
       setStock("");
-
     } catch (error) {
       console.error(error);
       alert("Failed to add saree");
+    } finally {
+      setLoading(false); // stop spinner
     }
   };
 
@@ -127,7 +129,6 @@ function AdminAddSaree() {
           <option value="Wedding">Wedding</option>
         </select>
 
-        {/* 🔥 Category Dropdown */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -155,7 +156,9 @@ function AdminAddSaree() {
           onChange={(e) => setStock(e.target.value)}
         />
 
-        <button type="submit">Add Saree</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Adding..." : "Add Saree"}
+        </button>
       </form>
     </div>
   );

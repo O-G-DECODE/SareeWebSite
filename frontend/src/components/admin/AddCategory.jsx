@@ -6,11 +6,13 @@ function AddCategory() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [isActive, setIsActive] = useState(true);
+  const [loading, setLoading] = useState(false); // new state for loading
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // prevent multiple clicks
 
-    console.log("Submitting form...");
+    setLoading(true); // start spinner
 
     const formData = new FormData();
     formData.append("name", name);
@@ -19,28 +21,32 @@ function AddCategory() {
     formData.append("isActive", isActive);
 
     try {
-      const res = await fetch(
-        `${API_URL}/admin-home/AddCategory`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch(`${API_URL}/admin-home/AddCategory`, {
+        method: "POST",
+        body: formData,
+      });
 
       const data = await res.json();
       alert(data.message);
 
+      // Optionally reset the form after successful submission
+      setName("");
+      setDescription("");
+      setImage(null);
+      setIsActive(true);
     } catch (error) {
       console.error(error);
       alert("Error adding category");
+    } finally {
+      setLoading(false); // stop spinner
     }
   };
 
   return (
-    <div className="admin-form-container"> 
+    <div className="admin-form-container">
       <h2>Add Category</h2>
 
-      <form  className="admin-form" onSubmit={handleSubmit}>
+      <form className="admin-form" onSubmit={handleSubmit}>
         <input
           type="text"
           name="name"
@@ -75,7 +81,9 @@ function AddCategory() {
           <option value="false">Inactive</option>
         </select>
 
-        <button type="submit">Add Category</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Adding..." : "Add Category"}
+        </button>
       </form>
     </div>
   );

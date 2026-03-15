@@ -7,7 +7,6 @@ function EditSaree() {
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSareeId, setSelectedSareeId] = useState("");
-
   const [search, setSearch] = useState("");
 
   const [formData, setFormData] = useState({
@@ -24,15 +23,16 @@ function EditSaree() {
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState(false); // new loading state
 
-  // 🔥 Fetch categories
+  // Fetch categories
   useEffect(() => {
     fetch(`${API_URL}/`)
       .then(res => res.json())
       .then(data => setCategories(data));
   }, []);
 
-  // 🔥 Fetch sarees when category selected
+  // Fetch sarees when category selected
   useEffect(() => {
     if (!selectedCategory) return;
 
@@ -41,7 +41,7 @@ function EditSaree() {
       .then(data => setSarees(data));
   }, [selectedCategory]);
 
-  // 🔥 Handle saree selection
+  // Handle saree selection
   const handleSelectSaree = (id) => {
     const saree = sarees.find(s => s._id === id);
     if (!saree) return;
@@ -62,12 +62,15 @@ function EditSaree() {
     setImage(null);
   };
 
-  // 🔥 Update handler
+  // Update handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // prevent multiple clicks
+    if (!selectedSareeId) return alert("Select a saree to update");
+
+    setLoading(true); // start spinner
 
     const data = new FormData();
-
     Object.keys(formData).forEach(key => {
       data.append(key, formData[key]);
     });
@@ -76,18 +79,23 @@ function EditSaree() {
       data.append("image", image);
     }
 
-    const res = await fetch(`"${API_URL}"/admin-home/updateSaree/${selectedSareeId}`,
-      {
-        method: "PUT",
-        body: data
-      }
-    );
+    try {
+      const res = await fetch(
+        `${API_URL}/admin-home/updateSaree/${selectedSareeId}`,
+        { method: "PUT", body: data }
+      );
 
-    const result = await res.json();
-    alert(result.message);
+      const result = await res.json();
+      alert(result.message);
+    } catch (err) {
+      console.error(err);
+      alert("Update failed");
+    } finally {
+      setLoading(false); // stop spinner
+    }
   };
 
-  // 🔥 Search filter
+  // Search filter
   const filteredSarees = sarees.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -97,12 +105,10 @@ function EditSaree() {
       <h2>Edit Saree</h2>
 
       {/* Category Select */}
-      <select onChange={(e) => setSelectedCategory(e.target.value)}>
+      <select onChange={(e) => setSelectedCategory(e.target.value)} value={selectedCategory}>
         <option value="">Select Category</option>
         {categories.map(cat => (
-          <option key={cat._id} value={cat._id}>
-            {cat.name}
-          </option>
+          <option key={cat._id} value={cat._id}>{cat.name}</option>
         ))}
       </select>
 
@@ -116,12 +122,10 @@ function EditSaree() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <select onChange={(e) => handleSelectSaree(e.target.value)}>
+          <select onChange={(e) => handleSelectSaree(e.target.value)} value={selectedSareeId}>
             <option value="">Select Saree</option>
             {filteredSarees.map(s => (
-              <option key={s._id} value={s._id}>
-                {s.name}
-              </option>
+              <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
         </>
@@ -183,15 +187,15 @@ function EditSaree() {
 
           <select
             value={formData.isActive}
-            onChange={(e) =>
-              setFormData({...formData, isActive: e.target.value === "true"})
-            }
+            onChange={(e) => setFormData({...formData, isActive: e.target.value === "true"})}
           >
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>
 
-          <button type="submit">Update Saree</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Updating..." : "Update Saree"}
+          </button>
         </form>
       )}
     </div>

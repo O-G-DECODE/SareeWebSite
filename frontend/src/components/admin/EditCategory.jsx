@@ -10,16 +10,17 @@ function EditCategory() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [loading, setLoading] = useState(false); // new loading state
 
-  // 🔥 Fetch all categories for dropdown
+  // Fetch all categories for dropdown
   useEffect(() => {
-    fetch("https://sareewebsite.onrender.com/")
+    fetch(`${API_URL}/categories`) // replace with your real endpoint
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
   }, []);
 
-  // 🔥 When selecting a category
+  // When selecting a category
   const handleSelect = (id) => {
     const category = categories.find((cat) => cat._id === id);
 
@@ -29,31 +30,33 @@ function EditCategory() {
       setDescription(category.description || "");
       setPreview(category.image);
       setIsActive(category.isActive);
-      setImage(null); // reset new image
+      setImage(null);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // prevent multiple clicks
 
     if (!selectedId) {
       alert("Please select a category");
       return;
     }
 
+    setLoading(true); // start spinner
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
     formData.append("isActive", isActive);
 
-    // Only append image if new one selected
     if (image) {
       formData.append("image", image);
     }
 
     try {
       const res = await fetch(
-        `https://sareewebsite.onrender.com/admin-home/updateCategory/${selectedId}`,
+        `${API_URL}/admin-home/updateCategory/${selectedId}`,
         {
           method: "PUT",
           body: formData,
@@ -62,10 +65,11 @@ function EditCategory() {
 
       const data = await res.json();
       alert(data.message);
-
     } catch (error) {
       console.error(error);
       alert("Update failed");
+    } finally {
+      setLoading(false); // stop spinner
     }
   };
 
@@ -74,7 +78,7 @@ function EditCategory() {
       <h2>Edit Category</h2>
 
       {/* Dropdown */}
-      <select onChange={(e) => handleSelect(e.target.value)}>
+      <select onChange={(e) => handleSelect(e.target.value)} value={selectedId}>
         <option value="">Select Category</option>
         {categories.map((cat) => (
           <option key={cat._id} value={cat._id}>
@@ -98,7 +102,6 @@ function EditCategory() {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          {/* Show existing image */}
           {preview && (
             <div>
               <p>Current Image:</p>
@@ -120,7 +123,9 @@ function EditCategory() {
             <option value="false">Inactive</option>
           </select>
 
-          <button type="submit">Update Category</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Updating..." : "Update Category"}
+          </button>
         </form>
       )}
     </div>
