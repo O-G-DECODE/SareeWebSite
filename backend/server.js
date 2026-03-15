@@ -37,7 +37,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://sareewebsite.vercel.app",
+      "https://sareesbykalyani.vercel.app",
       "https://sareesbykalyani-kf0fryilm-o-g-decodes-projects.vercel.app" 
       ],
     methods: ["GET", "POST", "PUT", "DELETE"],
