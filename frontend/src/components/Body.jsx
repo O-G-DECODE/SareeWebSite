@@ -1,6 +1,7 @@
 import SareeCards from "./SareeCards";
-
+import { useNavigate } from "react-router-dom";
 const Body = () => {
+  const navigate = useNavigate();
   return (
     <section id="home">
       {/* Hero section */}
@@ -13,9 +14,7 @@ const Body = () => {
           Timeless elegance woven into every saree
         </p>
 
-        <button className="explore-btn">
-          Explore Collection
-        </button>
+        <button className="explore-btn" onClick={()=>navigate("/explore") }>  Explore Collection </button>
       </div>
       <div>
         <h2> Major Categories</h2>

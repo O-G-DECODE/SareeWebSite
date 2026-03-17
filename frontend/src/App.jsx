@@ -11,6 +11,8 @@ import ManageCategory from "./components/admin/ManageCategory";
 import ManageSaree from "./components/admin/ManageSaree";
 
 import CategorySarees from "./components/CategorySarees";
+import Explore from "./components/user/Explore";
+import UserBottomNav from "./components/user/UserBottomNavigation";
 
 function App() {
   const location = useLocation();
@@ -27,6 +29,11 @@ function App() {
         <Route path="/sarees" element={<SareeCards />} />
         <Route path="/login" element={<Login />} />
         <Route path="/saree/:id" element={<CategorySarees />} />
+
+        <Route path="/explore" element={<UserBottomNav />}>
+          <Route index element={<Explore />} />
+        </Route>
+          
 
         {/* Admin routes */}
         <Route path="/admin-home" element={<AdminNavbar />}>
