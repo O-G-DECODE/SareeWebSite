@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CategorySarees = () => {
@@ -8,9 +9,9 @@ const CategorySarees = () => {
 
   useEffect(() => {
     fetch(`${API_URL}/sarees/category/${id}`)
-      .then(res => res.json())
-      .then(data => setSarees(data))
-      .catch(err => console.log(err));
+      .then((res) => res.json())
+      .then((data) => setSarees(data))
+      .catch((err) => console.log(err));
   }, [id]);
 
   return (
@@ -20,10 +21,28 @@ const CategorySarees = () => {
       ) : (
         sarees.map((item) => (
           <div className="card" key={item._id}>
-            <img src={item.image} alt={item.name} width="200" />
+            
+            {/* ✅ FIRST IMAGE */}
+            <img
+              src={item.images?.[0]}
+              alt={item.name}
+              width="200"
+            />
+
             <h4>{item.name}</h4>
+
             <p>₹ {item.price}</p>
-            <p>{item.material}</p>
+
+            {/* ✅ MATERIALS */}
+            <p>
+              {item.materials?.join(", ")}
+            </p>
+
+            {/* ✅ COLORS */}
+            <p>
+              {item.colors?.join(", ")}
+            </p>
+
           </div>
         ))
       )}

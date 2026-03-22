@@ -4,21 +4,25 @@ const API_URL = import.meta.env.VITE_API_URL;
 function AddCategory() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]); // ✅ multiple images
   const [isActive, setIsActive] = useState(true);
-  const [loading, setLoading] = useState(false); // new state for loading
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return; // prevent multiple clicks
+    if (loading) return;
 
-    setLoading(true); // start spinner
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("image", image);
     formData.append("isActive", isActive);
+
+    // ✅ append multiple images
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images", images[i]);
+    }
 
     try {
       const res = await fetch(`${API_URL}/admin-home/AddCategory`, {
@@ -29,16 +33,16 @@ function AddCategory() {
       const data = await res.json();
       alert(data.message);
 
-      // Optionally reset the form after successful submission
+      // reset
       setName("");
       setDescription("");
-      setImage(null);
+      setImages([]);
       setIsActive(true);
     } catch (error) {
       console.error(error);
       alert("Error adding category");
     } finally {
-      setLoading(false); // stop spinner
+      setLoading(false);
     }
   };
 
@@ -49,7 +53,6 @@ function AddCategory() {
       <form className="admin-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          name="name"
           placeholder="Category Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -58,24 +61,23 @@ function AddCategory() {
 
         <input
           type="text"
-          name="description"
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
 
+        {/* ✅ MULTIPLE IMAGE INPUT */}
         <input
           type="file"
-          name="image"
+          multiple
           accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
+          onChange={(e) => setImages(e.target.files)}
           required
         />
 
         <select
-          name="isActive"
           value={isActive}
-          onChange={(e) => setIsActive(e.target.value)}
+          onChange={(e) => setIsActive(e.target.value === "true")}
         >
           <option value="true">Active</option>
           <option value="false">Inactive</option>

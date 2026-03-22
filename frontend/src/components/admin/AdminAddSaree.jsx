@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
 import "./AdminAddSaree.css";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function AdminAddSaree() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState(null);
-  const [color, setColor] = useState("");
-  const [material, setMaterial] = useState("");
+  const [images, setImages] = useState([]); // ✅ multiple images
+  const [colors, setColors] = useState([]); // ✅ multiple colors
+  const [materials, setMaterials] = useState([]); // ✅ multiple materials
   const [sareeType, setSareeType] = useState("");
   const [category, setCategory] = useState("");
   const [videoId, setVideoId] = useState("");
   const [stock, setStock] = useState("");
 
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false); // loading state
+  const [loading, setLoading] = useState(false);
 
-  // Fetch categories for dropdown
+  // fetch categories
   useEffect(() => {
     fetch(`${API_URL}/`)
       .then((res) => res.json())
@@ -24,27 +25,42 @@ function AdminAddSaree() {
       .catch((err) => console.error(err));
   }, []);
 
+  // ✅ handle multi select (checkbox style)
+  const handleMultiChange = (value, list, setList) => {
+    if (list.includes(value)) {
+      setList(list.filter((item) => item !== value));
+    } else {
+      setList([...list, value]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return; // prevent multiple clicks
+    if (loading) return;
 
-    if (!image) {
-      alert("Please upload an image");
+    if (images.length === 0) {
+      alert("Upload at least one image");
       return;
     }
 
-    setLoading(true); // start spinner
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("name", name);
     formData.append("price", price);
-    formData.append("image", image);
-    formData.append("color", color);
-    formData.append("material", material);
     formData.append("sareeType", sareeType);
     formData.append("category", category);
     formData.append("videoId", videoId);
     formData.append("stock", stock);
+
+    // ✅ append multiple images
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images", images[i]);
+    }
+
+    // ✅ append arrays
+    colors.forEach((c) => formData.append("colors[]", c));
+    materials.forEach((m) => formData.append("materials[]", m));
 
     try {
       const res = await fetch(`${API_URL}/admin-home/addSaree`, {
@@ -55,21 +71,22 @@ function AdminAddSaree() {
       const data = await res.json();
       alert(data.message);
 
-      // Reset form after success
+      // reset
       setName("");
       setPrice("");
-      setImage(null);
-      setColor("");
-      setMaterial("");
+      setImages([]);
+      setColors([]);
+      setMaterials([]);
       setSareeType("");
       setCategory("");
       setVideoId("");
       setStock("");
-    } catch (error) {
-      console.error(error);
+
+    } catch (err) {
+      console.error(err);
       alert("Failed to add saree");
     } finally {
-      setLoading(false); // stop spinner
+      setLoading(false);
     }
   };
 
@@ -94,28 +111,43 @@ function AdminAddSaree() {
           required
         />
 
+        {/* ✅ MULTIPLE IMAGES */}
         <input
           type="file"
+          multiple
           accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
-          required
+          onChange={(e) => setImages(e.target.files)}
         />
 
-        <input
-          type="text"
-          placeholder="Color (e.g. Red)"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          required
-        />
+        {/* ✅ COLORS */}
+        <div>
+          <p>Select Colors:</p>
+          {["Red", "Blue", "Green", "Black", "White", "Gold"].map((c) => (
+            <label key={c}>
+              <input
+                type="checkbox"
+                checked={colors.includes(c)}
+                onChange={() => handleMultiChange(c, colors, setColors)}
+              />
+              {c}
+            </label>
+          ))}
+        </div>
 
-        <input
-          type="text"
-          placeholder="Material (e.g. Silk)"
-          value={material}
-          onChange={(e) => setMaterial(e.target.value)}
-          required
-        />
+        {/* ✅ MATERIALS */}
+        <div>
+          <p>Select Materials:</p>
+          {["Silk", "Cotton", "Linen", "Chiffon"].map((m) => (
+            <label key={m}>
+              <input
+                type="checkbox"
+                checked={materials.includes(m)}
+                onChange={() => handleMultiChange(m, materials, setMaterials)}
+              />
+              {m}
+            </label>
+          ))}
+        </div>
 
         <select
           value={sareeType}
@@ -144,7 +176,7 @@ function AdminAddSaree() {
 
         <input
           type="text"
-          placeholder="YouTube Video ID (optional)"
+          placeholder="YouTube Video ID"
           value={videoId}
           onChange={(e) => setVideoId(e.target.value)}
         />

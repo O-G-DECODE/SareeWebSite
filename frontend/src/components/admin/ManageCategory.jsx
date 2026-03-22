@@ -9,6 +9,7 @@ function ManageCategory() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [images, setImages] = useState([]); // ✅ new
 
   // Fetch categories
   useEffect(() => {
@@ -18,7 +19,7 @@ function ManageCategory() {
       .catch((err) => console.error(err));
   }, []);
 
-  // Populate form when selecting a category
+  // Populate form
   const handleSelect = (id) => {
     const cat = categories.find((c) => c._id === id);
     if (!cat) return;
@@ -27,27 +28,46 @@ function ManageCategory() {
     setName(cat.name);
     setDescription(cat.description || "");
     setIsActive(cat.isActive);
+    setImages([]); // reset new upload
   };
 
-  // Edit handler
+  // ✅ EDIT WITH FORM DATA
   const handleEdit = async (e) => {
     e.preventDefault();
-    if (!selectedCategoryId) return alert("Select a category to edit");
+    if (!selectedCategoryId) return alert("Select a category");
+
     setLoading(true);
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("isActive", isActive);
+
+    // append images if selected
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images", images[i]);
+    }
+
     try {
-      const res = await fetch(`${API_URL}/admin-home/updateCategory/${selectedCategoryId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, isActive }),
-      });
+      const res = await fetch(
+        `${API_URL}/admin-home/updateCategory/${selectedCategoryId}`,
+        {
+          method: "PUT",
+          body: formData, // ✅ no headers
+        }
+      );
+
       const data = await res.json();
       alert(data.message);
-      // Refresh categories
-      const updatedCategories = categories.map((c) =>
-        c._id === selectedCategoryId ? { ...c, name, description, isActive } : c
+
+      // refresh list
+      const updated = categories.map((c) =>
+        c._id === selectedCategoryId
+          ? { ...c, name, description, isActive }
+          : c
       );
-      setCategories(updatedCategories);
+
+      setCategories(updated);
     } catch (err) {
       console.error(err);
       alert("Update failed");
@@ -56,24 +76,32 @@ function ManageCategory() {
     }
   };
 
-  // Delete handler
+  // DELETE (no change)
   const handleDelete = async () => {
-    if (!selectedCategoryId) return alert("Select a category to delete");
-    const confirmDelete = window.confirm("Are you sure you want to delete this category?");
-    if (!confirmDelete) return;
+    if (!selectedCategoryId) return alert("Select a category");
+
+    if (!window.confirm("Delete this category?")) return;
 
     setLoading(true);
+
     try {
-      const res = await fetch(`${API_URL}/admin-home/deleteCategory/${selectedCategoryId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${API_URL}/admin-home/deleteCategory/${selectedCategoryId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
       const data = await res.json();
       alert(data.message);
+
       setCategories(categories.filter((c) => c._id !== selectedCategoryId));
+
       setSelectedCategoryId("");
       setName("");
       setDescription("");
       setIsActive(true);
+      setImages([]);
     } catch (err) {
       console.error(err);
       alert("Delete failed");
@@ -86,10 +114,16 @@ function ManageCategory() {
     <div className="admin-form-container">
       <h2>Manage Category</h2>
 
-      <select value={selectedCategoryId} onChange={(e) => handleSelect(e.target.value)}>
+      {/* SELECT */}
+      <select
+        value={selectedCategoryId}
+        onChange={(e) => handleSelect(e.target.value)}
+      >
         <option value="">Select Category</option>
         {categories.map((c) => (
-          <option key={c._id} value={c._id}>{c.name}</option>
+          <option key={c._id} value={c._id}>
+            {c.name}
+          </option>
         ))}
       </select>
 
@@ -101,11 +135,21 @@ function ManageCategory() {
             onChange={(e) => setName(e.target.value)}
             required
           />
+
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+
+          {/* ✅ MULTIPLE IMAGE UPDATE */}
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => setImages(e.target.files)}
+          />
+
           <select
             value={isActive}
             onChange={(e) => setIsActive(e.target.value === "true")}
@@ -117,7 +161,13 @@ function ManageCategory() {
           <button type="submit" disabled={loading}>
             {loading ? "Updating..." : "Update Category"}
           </button>
-          <button type="button" onClick={handleDelete} disabled={loading} style={{ marginLeft: "10px", color: "red" }}>
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={loading}
+            style={{ marginLeft: "10px", color: "red" }}
+          >
             {loading ? "Deleting..." : "Delete Category"}
           </button>
         </form>
