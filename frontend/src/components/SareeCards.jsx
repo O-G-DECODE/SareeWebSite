@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 const SareeCards = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-
-
+const VITE_API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-fetch("https://sareewebsite.onrender.com/")
+fetch(`${VITE_API}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Data from backend:", data);
@@ -23,7 +22,7 @@ fetch("https://sareewebsite.onrender.com/")
         <div
           className="card"
           key={item._id}
-          onClick={() => navigate(`/saree/${item._id}`)}
+          onClick={() => navigate(`saree/${item._id}`)}
           style={{ cursor: "pointer" }}
         >
           <img src={item.image} alt={item.name} width="200" />

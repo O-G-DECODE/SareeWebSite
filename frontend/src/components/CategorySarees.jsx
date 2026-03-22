@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const CategorySarees = () => {
   const { id } = useParams();
   const [sarees, setSarees] = useState([]);
-const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetch(`${API_URL}/sarees/category/${id}`)
