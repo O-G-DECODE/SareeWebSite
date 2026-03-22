@@ -99,6 +99,22 @@ app.get("/categories", async (req, res) => {
     res.json(categories); } 
     catch (err) { res.status(500).json({ message: "Server error" });
    } });
+
+   // ===============================
+// ✅ GET ALL SAREES (Public)
+// ===============================
+app.get("/sarees", async (req, res) => {
+  try {
+    const sarees = await Saree.find({ isActive: true })
+      .sort({ createdAt: -1 });
+
+    res.json(sarees);
+
+  } catch (error) {
+    console.error("GET ALL SAREES ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 // ===============================
 // ✅ GET ALL CATEGORIES
 // ===============================
