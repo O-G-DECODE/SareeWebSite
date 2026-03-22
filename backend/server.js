@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -9,7 +8,7 @@ const cloudinary = require("cloudinary").v2;
 
 const Admin = require("./models/Admin");
 const Category = require("./models/Category");
-const Saree = require("./models/Sarees")
+const Saree = require("./models/Sarees");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,12 +37,13 @@ app.use(
       "http://localhost:3000",
       "http://localhost:5173",
       "https://sareesbykalyani.vercel.app",
-      "https://sareesbykalyani-kf0fryilm-o-g-decodes-projects.vercel.app" 
-      ],
+      "https://sareesbykalyani-kf0fryilm-o-g-decodes-projects.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+    credentials: true,
   })
-);app.use(express.json());
+);
+app.use(express.json());
 
 // ===============================
 // ✅ MongoDB Connection
@@ -53,7 +53,6 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("❌ MongoDB error:", err));
 
-
 // ===============================
 // ✅ LOGIN ROUTE
 // ===============================
@@ -62,472 +61,328 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const admin = await Admin.findOne({ email });
-    if (!admin) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    if (!admin) return res.status(401).json({ success: false, message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Password mismatch",
-      });
-    }
+    if (!isMatch) return res.status(401).json({ success: false, message: "Password mismatch" });
 
-    res.status(200).json({
-      success: true,
-      message: "Login Successful",
-      adminId: admin._id,
-    });
-
+    res.status(200).json({ success: true, message: "Login Successful", adminId: admin._id });
   } catch (error) {
     console.error("LOGIN ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
-// ===============================
-// ✅ GET ALL CATEGORIES FOR ADMIN
-// ===============================
-app.get("/categories", async (req, res) => {
-     try { const categories = await Category.find();
-    res.json(categories); } 
-    catch (err) { res.status(500).json({ message: "Server error" });
-   } });
 
-   // ===============================
-// ✅ GET ALL SAREES (Public)
 // ===============================
+// ✅ GET ALL CATEGORIES (Public)
+app.get("/", async (req, res) => {
+  try {
+    const categories = await Category.find({ isActive: true });
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ===============================
+// ✅ GET ALL CATEGORIES (Admin)
+app.get("/categories", async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ===============================
+// ✅ GET ALL SAREES (Public)
 app.get("/sarees", async (req, res) => {
   try {
-    const sarees = await Saree.find({ isActive: true })
-      .sort({ createdAt: -1 });
-
+    const sarees = await Saree.find({ isActive: true }).sort({ createdAt: -1 });
     res.json(sarees);
-
-  } catch (error) {
-    console.error("GET ALL SAREES ERROR:", error);
+  } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
 });
 
-// GET A SINGLE SAREE
-
+// ===============================
+// ✅ GET SINGLE SAREE
 app.get("/sarees/:id", async (req, res) => {
   try {
     const saree = await Saree.findById(req.params.id);
-
-    if (!saree) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
+    if (!saree) return res.status(404).json({ message: "Not found" });
     res.json(saree);
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
 });
-// ===============================
-// ✅ GET ALL CATEGORIES
-// ===============================
-app.get("/", async (req, res) => {
-   try { const categories = await Category.find({ isActive: true });
-    res.json(categories); } 
-    catch (err) { res.status(500).json({ message: "Server error" });
-   } });
 
 // ===============================
-// ✅ GET SAREES BY CATEGORY (Public)
-// ===============================
+// ✅ GET SAREES BY CATEGORY
 app.get("/sarees/category/:categoryId", async (req, res) => {
   try {
     const { categoryId } = req.params;
-
-    const sarees = await Saree.find({
-      category: categoryId,
-      isActive: true
-    }).sort({ createdAt: -1 });
-
+    const sarees = await Saree.find({ category: categoryId, isActive: true }).sort({ createdAt: -1 });
     res.json(sarees);
-
-  } catch (error) {
-    console.error("GET SAREES ERROR:", error);
+  } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
 });
 
 // ===============================
-// ✅ ADD CATEGORY (Cloudinary)
-// ===============================
-app.post("/admin-home/AddCategory", upload.single("image"), async (req, res) => {
+// ✅ FILTER SAREES
+app.get("/sarees/filter", async (req, res) => {
   try {
-    console.log("🔥 Route Hit");
+    const { colors, materials, minPrice, maxPrice } = req.query;
 
+    let query = { isActive: true };
+
+    if (colors) query.colors = { $in: colors.split(",") };
+    if (materials) query.materials = { $in: materials.split(",") };
+    if (minPrice && maxPrice) query.price = { $gte: minPrice, $lte: maxPrice };
+
+    const sarees = await Saree.find(query);
+    res.json(sarees);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// ===============================
+// ✅ ADD CATEGORY
+app.post("/admin-home/AddCategory", upload.array("images", 3), async (req, res) => {
+  try {
     const { name, description, isActive } = req.body;
+    if (!req.files || req.files.length === 0) return res.status(400).json({ message: "Images required" });
 
-    if (!req.file) {
-      return res.status(400).json({ message: "Image is required" });
-    }
+    const existing = await Category.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
+    if (existing) return res.status(400).json({ message: "Category already exists" });
 
-    // Case-insensitive duplicate check (better)
-    const existing = await Category.findOne({ 
-      name: { $regex: new RegExp("^" + name + "$", "i") }
-    });
-
-    if (existing) {
-      return res.status(400).json({ message: "Category already exists" });
-    }
-
-    const uploadImage = () =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "saree_categories" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-
-    const result = await uploadImage();
+    const uploaded = await Promise.all(
+      req.files.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({ folder: "categories" }, (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+            });
+            stream.end(file.buffer);
+          })
+      )
+    );
 
     const newCategory = new Category({
       name,
       description,
-      image: result.secure_url,
-      imagePublicId: result.public_id, // ✅ VERY IMPORTANT
+      images: uploaded.map((img) => img.secure_url),
+      imagePublicIds: uploaded.map((img) => img.public_id),
       isActive: isActive === "true" || isActive === true,
     });
 
     await newCategory.save();
-
-    res.status(201).json({
-      message: "Category added successfully",
-      data: newCategory,
-    });
-
-  } catch (error) {
-    console.error("ADD CATEGORY ERROR:", error);
+    res.status(201).json({ message: "Category added successfully", data: newCategory });
+  } catch (err) {
+    console.error("ADD CATEGORY ERROR:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
-// ===============================
 
 // ===============================
-// ✅ UPDATE CATEGORY (Replace Image Supported)
-// ===============================
-app.put("/admin-home/updateCategory/:id", upload.single("image"), async (req, res) => {
+// ✅ UPDATE CATEGORY
+app.put("/admin-home/updateCategory/:id", upload.array("images", 3), async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, isActive } = req.body;
 
     const category = await Category.findById(id);
-    if (!category) {
-      return res.status(404).json({ message: "Category not found" });
-    }
+    if (!category) return res.status(404).json({ message: "Category not found" });
 
-    // 🔹 Check duplicate name (case-insensitive, excluding current category)
     if (name) {
-      const existing = await Category.findOne({
-        name: { $regex: new RegExp("^" + name + "$", "i") },
-        _id: { $ne: id }
-      });
-
-      if (existing) {
-        return res.status(400).json({ message: "Category name already exists" });
-      }
-
+      const existing = await Category.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") }, _id: { $ne: id } });
+      if (existing) return res.status(400).json({ message: "Category name already exists" });
       category.name = name.trim();
     }
 
-    // 🔹 Update description
-    if (description !== undefined) {
-      category.description = description;
-    }
+    if (description !== undefined) category.description = description;
+    if (isActive !== undefined) category.isActive = isActive === "true" || isActive === true;
 
-    // 🔹 Update status
-    if (isActive !== undefined) {
-      category.isActive = isActive === "true" || isActive === true;
-    }
-
-    // 🔹 If new image uploaded → delete old + upload new
-    if (req.file) {
-
-      // Delete old image from Cloudinary
-      if (category.imagePublicId) {
-        await cloudinary.uploader.destroy(category.imagePublicId);
+    if (req.files && req.files.length > 0) {
+      if (category.imagePublicIds?.length) {
+        for (const id of category.imagePublicIds) await cloudinary.uploader.destroy(id);
       }
 
-      const uploadImage = () =>
-        new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: "saree_categories" },
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result);
-            }
-          );
-          stream.end(req.file.buffer);
-        });
+      const uploaded = await Promise.all(
+        req.files.map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream({ folder: "categories" }, (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+              });
+              stream.end(file.buffer);
+            })
+        )
+      );
 
-      const result = await uploadImage();
-
-      category.image = result.secure_url;
-      category.imagePublicId = result.public_id;
+      category.images = uploaded.map((img) => img.secure_url);
+      category.imagePublicIds = uploaded.map((img) => img.public_id);
     }
 
     await category.save();
-
-    res.status(200).json({
-      message: "Category updated successfully",
-      data: category,
-    });
-
-  } catch (error) {
-    console.error("UPDATE CATEGORY ERROR:", error);
+    res.json({ message: "Category updated successfully", data: category });
+  } catch (err) {
+    console.error("UPDATE CATEGORY ERROR:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
 
 // ===============================
 // ✅ DELETE CATEGORY
-// ===============================
 app.delete("/admin-home/deleteCategory/:id", async (req, res) => {
   try {
     const { id } = req.params;
-
     const category = await Category.findById(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
 
-    if (!category) {
-      return res.status(404).json({ message: "Category not found" });
-    }
-
-    // 🔴 Check if sarees exist in this category
     const sarees = await Saree.find({ category: id });
+    if (sarees.length > 0) return res.status(400).json({ message: "Cannot delete category with existing sarees" });
 
-    if (sarees.length > 0) {
-      return res.status(400).json({
-        message: "Cannot delete category with existing sarees"
-      });
+    if (category.imagePublicIds?.length) {
+      for (const id of category.imagePublicIds) await cloudinary.uploader.destroy(id);
     }
 
-    // 🔵 Delete image from Cloudinary
-    if (category.imagePublicId) {
-  await cloudinary.uploader.destroy(category.imagePublicId, {
-    resource_type: "image"
-  });
-}
     await Category.findByIdAndDelete(id);
-
     res.json({ message: "Category deleted successfully" });
-
-  } catch (error) {
-    console.error("DELETE CATEGORY ERROR:", error);
+  } catch (err) {
+    console.error("DELETE CATEGORY ERROR:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
 
 // ===============================
 // ✅ ADD SAREE
-// ===============================
-app.post("/admin-home/addSaree", upload.single("image"), async (req, res) => {
+app.post("/admin-home/addSaree", upload.array("images", 5), async (req, res) => {
   try {
-    const {
-      name,
-      price,
-      color,
-      material,
-      sareeType,
-      category,
-      videoId,
-      stock
-    } = req.body;
+    const { name, price, sareeType, category, videoId, stock } = req.body;
+    const colors = req.body["colors[]"] || [];
+    const materials = req.body["materials[]"] || [];
 
-    // 🔹 Check duplicate name
-    const existing = await Saree.findOne({
-      name: { $regex: new RegExp("^" + name + "$", "i") }
-    });
+    if (!req.files || req.files.length === 0) return res.status(400).json({ message: "Images required" });
 
-    if (existing) {
-      return res.status(400).json({ message: "Saree already exists" });
-    }
+    const existing = await Saree.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
+    if (existing) return res.status(400).json({ message: "Saree already exists" });
 
-    // 🔹 Upload image to Cloudinary
-    const uploadImage = () =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "sarees" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-
-    const result = await uploadImage();
+    const uploaded = await Promise.all(
+      req.files.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({ folder: "sarees" }, (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+            });
+            stream.end(file.buffer);
+          })
+      )
+    );
 
     const newSaree = new Saree({
       name: name.trim(),
       price,
-      image: result.secure_url,
-      imagePublicId: result.public_id, // 🔥 important
-      color,
-      material,
+      images: uploaded.map((img) => img.secure_url),
+      imagePublicIds: uploaded.map((img) => img.public_id),
+      colors: Array.isArray(colors) ? colors : [colors],
+      materials: Array.isArray(materials) ? materials : [materials],
       sareeType,
       category,
       videoId,
       stock,
-      isActive: true
+      isActive: true,
     });
 
     await newSaree.save();
-
-    res.status(201).json({
-      message: "Saree added successfully",
-      data: newSaree
-    });
-
-  } catch (error) {
-    console.error("ADD SAREE ERROR:", error);
-    res.status(500).json({ message: "Server Error" });
-  }
-});
-// ===============================
-// ✅ DELETE SAREE
-// ===============================
-app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const saree = await Saree.findById(id);
-
-    if (!saree) {
-      return res.status(404).json({ message: "Saree not found" });
-    }
-
-    // 🔴 Delete image from Cloudinary
-    if (saree.imagePublicId) {
-  await cloudinary.uploader.destroy(saree.imagePublicId, {
-    resource_type: "image"
-  });
-}
-    await Saree.findByIdAndDelete(id);
-
-    res.json({ message: "Saree deleted successfully" });
-
-  } catch (error) {
-    console.error("DELETE SAREE ERROR:", error);
-    res.status(500).json({ message: "Server Error" });
-  }
-});
-// ===============================
-// ✅ GET SAREES BY CATEGORY
-// ===============================
-app.get("/admin-home/sarees/:categoryId", async (req, res) => {
-  try {
-    const { categoryId } = req.params;
-
-    const sarees = await Saree.find({
-      category: categoryId
-    }).sort({ createdAt: -1 });
-
-    res.json(sarees);
-  } catch (error) {
-    console.error(error);
+    res.status(201).json({ message: "Saree added successfully", data: newSaree });
+  } catch (err) {
+    console.error("ADD SAREE ERROR:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
 
 // ===============================
 // ✅ UPDATE SAREE
-// ===============================
-app.put("/admin-home/updateSaree/:id", upload.single("image"), async (req, res) => {
+app.put("/admin-home/updateSaree/:id", upload.array("images", 5), async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      name,
-      price,
-      color,
-      material,
-      sareeType,
-      category,
-      videoId,
-      stock,
-      isActive
-    } = req.body;
+    const { name, price, sareeType, category, videoId, stock, isActive } = req.body;
+    const colors = req.body["colors[]"];
+    const materials = req.body["materials[]"];
 
     const saree = await Saree.findById(id);
-    if (!saree) {
-      return res.status(404).json({ message: "Saree not found" });
-    }
+    if (!saree) return res.status(404).json({ message: "Saree not found" });
 
-    // 🔹 Duplicate check (excluding current)
     if (name) {
-      const existing = await Saree.findOne({
-        name: { $regex: new RegExp("^" + name + "$", "i") },
-        _id: { $ne: id }
-      });
-
-      if (existing) {
-        return res.status(400).json({ message: "Saree name already exists" });
-      }
-
+      const existing = await Saree.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") }, _id: { $ne: id } });
+      if (existing) return res.status(400).json({ message: "Saree name already exists" });
       saree.name = name.trim();
     }
 
     saree.price = price ?? saree.price;
-    saree.color = color ?? saree.color;
-    saree.material = material ?? saree.material;
     saree.sareeType = sareeType ?? saree.sareeType;
     saree.category = category ?? saree.category;
     saree.videoId = videoId ?? saree.videoId;
     saree.stock = stock ?? saree.stock;
+    if (isActive !== undefined) saree.isActive = isActive === "true" || isActive === true;
+    if (colors) saree.colors = Array.isArray(colors) ? colors : [colors];
+    if (materials) saree.materials = Array.isArray(materials) ? materials : [materials];
 
-    if (isActive !== undefined) {
-      saree.isActive = isActive === "true" || isActive === true;
+    if (req.files && req.files.length > 0) {
+      if (saree.imagePublicIds?.length) {
+        for (const id of saree.imagePublicIds) await cloudinary.uploader.destroy(id);
+      }
+
+      const uploaded = await Promise.all(
+        req.files.map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream({ folder: "sarees" }, (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+              });
+              stream.end(file.buffer);
+            })
+        )
+      );
+
+      saree.images = uploaded.map((img) => img.secure_url);
+      saree.imagePublicIds = uploaded.map((img) => img.public_id);
     }
 
-    // 🔥 Replace Image
-    // 🔥 Replace Image (delete old + upload new)
-if (req.file) {
-
-  // 🔴 Delete old image from Cloudinary
-  if (saree.imagePublicId) {
-    await cloudinary.uploader.destroy(saree.imagePublicId);
-  }
-
-  // 🔵 Upload new image
-  const uploadImage = () =>
-    new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "sarees" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(req.file.buffer);
-    });
-
-  const result = await uploadImage();
-
-  saree.image = result.secure_url;
-  saree.imagePublicId = result.public_id; // 🔥 store new public id
-}
     await saree.save();
-
     res.json({ message: "Saree updated successfully", data: saree });
-
-  } catch (error) {
-    console.error("UPDATE SAREE ERROR:", error);
+  } catch (err) {
+    console.error("UPDATE SAREE ERROR:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
-app.listen(PORT, () => {
-console.log(`🚀 Server running on port ${PORT}`);});
+
+// ===============================
+// ✅ DELETE SAREE
+app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const saree = await Saree.findById(id);
+    if (!saree) return res.status(404).json({ message: "Saree not found" });
+
+    if (saree.imagePublicIds?.length) {
+      for (const id of saree.imagePublicIds) await cloudinary.uploader.destroy(id);
+    }
+
+    await Saree.findByIdAndDelete(id);
+    res.json({ message: "Saree deleted successfully" });
+  } catch (err) {
+    console.error("DELETE SAREE ERROR:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
