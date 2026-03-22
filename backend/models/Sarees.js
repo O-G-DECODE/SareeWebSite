@@ -5,66 +5,91 @@ const sareeSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+    },
+
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
     },
 
     price: {
       type: Number,
-      required: true
+      required: true,
     },
 
-    // 🖼️ Photo (image URL or path)
-    image: {
-      type: String,
-      required: true
-    },
-    imagePublicId: {
-       type: String,
-       required: true
-},
+    // 🖼️ MULTIPLE IMAGES
+    images: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        publicId: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
 
-    // 🎨 Color
-    color: {
-      type: String,
-      required: true
-    },
+    // 🎨 MULTIPLE COLORS
+    colors: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
 
-    // 🧵 Material (Silk, Cotton, Linen, etc.)
-    material: {
-      type: String,
-      required: true
-    },
+    // 🧵 MULTIPLE MATERIALS
+    materials: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
 
-    // 👗 Type of saree (Daily, Party, Fancy, Wedding)
+    // 👗 Flexible type
     sareeType: {
       type: String,
-      enum: ["Daily", "Party", "Fancy", "Wedding"],
-      required: true
+      trim: true,
     },
 
-    // 📂 Category reference
+    // 📂 CATEGORY
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
-      index: true // 🔥 makes filtering by category faster
-
+      index: true,
     },
 
-    // 🎥 Optional YouTube video
+    // 🎥 Optional video
     videoId: {
-      type: String
+      type: String,
     },
 
+    // 📦 STOCK
     stock: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
+    // ⭐ FUTURE READY
+    rating: {
+      type: Number,
+      default: 0,
+    },
+
+    reviewsCount: {
+      type: Number,
+      default: 0,
+    },
+
+    // ✅ ACTIVE
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   { timestamps: true }
 );

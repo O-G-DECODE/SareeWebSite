@@ -115,6 +115,22 @@ app.get("/sarees", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+// GET A SINGLE SAREE
+
+app.get("/sarees/:id", async (req, res) => {
+  try {
+    const saree = await Saree.findById(req.params.id);
+
+    if (!saree) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json(saree);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 // ===============================
 // ✅ GET ALL CATEGORIES
 // ===============================
