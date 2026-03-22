@@ -11,14 +11,14 @@ import ManageCategory from "./components/admin/ManageCategory";
 import ManageSaree from "./components/admin/ManageSaree";
 
 import CategorySarees from "./components/CategorySarees";
-import Explore from "./components/user/Explore";
-import UserBottomNav from "./components/user/UserBottomNavigation";
+import ExploreProducts from "./components/user/ExploreProducts";
+import ProductDetails from "./components/user/ProductDetails";
 
 function App() {
   const location = useLocation();
 
   // hide navbar on all admin pages
-  const shouldHideNavbar = location.pathname.startsWith("/admin-home");
+  const shouldHideNavbar = location.pathname.startsWith("/admin-home") || location.pathname.startsWith("/explore");;
 
   return (
     <>
@@ -30,9 +30,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/saree/:id" element={<CategorySarees />} />
 
-        <Route path="/explore" element={<UserBottomNav />}>
-          <Route index element={<Explore />} />
-        </Route>
+          <Route path="explore" element={<ExploreProducts />} />
+          <Route path="explore/:id" element={<ProductDetails />} />
+
           
 
         {/* Admin routes */}
