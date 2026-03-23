@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
+const slugify = require("slugify");
 
 const Admin = require("./models/Admin");
 const Category = require("./models/Category");
@@ -299,19 +300,22 @@ app.post("/admin-home/addSaree", upload.array("images", 5), async (req, res) => 
       )
     );
 
-    const newSaree = new Saree({
-      name: name.trim(),
-      price,
-      images: uploaded.map((img) => img.secure_url),
-      imagePublicIds: uploaded.map((img) => img.public_id),
-      colors: Array.isArray(colors) ? colors : [colors],
-      materials: Array.isArray(materials) ? materials : [materials],
-      sareeType,
-      category,
-      videoId,
-      stock,
-      isActive: true,
-    });
+ const newSaree = new Saree({
+  name: name.trim(),
+  slug: slugify(name.trim(), { lower: true, strict: true }), // ✅ auto slug
+  price,
+  images: uploaded.map((img) => ({
+    url: img.secure_url,
+    publicId: img.public_id,
+  })),
+  colors: Array.isArray(colors) ? colors : [colors],
+  materials: Array.isArray(materials) ? materials : [materials],
+  sareeType,
+  category,
+  videoId,
+  stock,
+  isActive: true,
+});
 
     await newSaree.save();
     res.status(201).json({ message: "Saree added successfully", data: newSaree });
@@ -334,10 +338,15 @@ app.put("/admin-home/updateSaree/:id", upload.array("images", 5), async (req, re
     if (!saree) return res.status(404).json({ message: "Saree not found" });
 
     if (name) {
-      const existing = await Saree.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") }, _id: { $ne: id } });
-      if (existing) return res.status(400).json({ message: "Saree name already exists" });
-      saree.name = name.trim();
-    }
+  const existing = await Saree.findOne({ 
+    name: { $regex: new RegExp("^" + name + "$", "i") }, 
+    _id: { $ne: id } 
+  });
+  if (existing) return res.status(400).json({ message: "Saree name already exists" });
+
+  saree.name = name.trim();
+  saree.slug = slugify(name.trim(), { lower: true, strict: true }); // ✅ update slug too
+}
 
     saree.price = price ?? saree.price;
     saree.sareeType = sareeType ?? saree.sareeType;
@@ -349,26 +358,35 @@ app.put("/admin-home/updateSaree/:id", upload.array("images", 5), async (req, re
     if (materials) saree.materials = Array.isArray(materials) ? materials : [materials];
 
     if (req.files && req.files.length > 0) {
-      if (saree.imagePublicIds?.length) {
-        for (const id of saree.imagePublicIds) await cloudinary.uploader.destroy(id);
-      }
-
-      const uploaded = await Promise.all(
-        req.files.map(
-          (file) =>
-            new Promise((resolve, reject) => {
-              const stream = cloudinary.uploader.upload_stream({ folder: "sarees" }, (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-              });
-              stream.end(file.buffer);
-            })
-        )
-      );
-
-      saree.images = uploaded.map((img) => img.secure_url);
-      saree.imagePublicIds = uploaded.map((img) => img.public_id);
+  // Delete old images from Cloudinary
+  if (saree.images?.length) {
+    for (const img of saree.images) {
+      await cloudinary.uploader.destroy(img.publicId);
     }
+  }
+
+  // Upload new images
+  const uploaded = await Promise.all(
+    req.files.map(
+      (file) =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "sarees" },
+            (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+            }
+          );
+          stream.end(file.buffer);
+        })
+    )
+  );
+
+  saree.images = uploaded.map((img) => ({
+    url: img.secure_url,
+    publicId: img.public_id,
+  }));
+}
 
     await saree.save();
     res.json({ message: "Saree updated successfully", data: saree });
@@ -386,8 +404,11 @@ app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
     const saree = await Saree.findById(id);
     if (!saree) return res.status(404).json({ message: "Saree not found" });
 
-    if (saree.imagePublicIds?.length) {
-      for (const id of saree.imagePublicIds) await cloudinary.uploader.destroy(id);
+    // Delete images from Cloudinary
+    if (saree.images?.length) {
+      for (const img of saree.images) {
+        await cloudinary.uploader.destroy(img.publicId);
+      }
     }
 
     await Saree.findByIdAndDelete(id);
@@ -397,5 +418,4 @@ app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
