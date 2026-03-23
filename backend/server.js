@@ -279,120 +279,161 @@ app.delete("/admin-home/deleteCategory/:id", async (req, res) => {
 app.post("/admin-home/addSaree", upload.array("images", 5), async (req, res) => {
   try {
     const { name, price, sareeType, category, videoId, stock } = req.body;
-    const colors = req.body["colors[]"] || [];
-    const materials = req.body["materials[]"] || [];
 
-    if (!req.files || req.files.length === 0) return res.status(400).json({ message: "Images required" });
+    // 1. Robust Array Parsing Helper
+    // This handles: "Red", ["Red", "Blue"], and both "colors" or "colors[]" keys
+    const parseToArray = (field) => {
+      const value = req.body[field] || req.body[`${field}[]`] || [];
+      if (Array.isArray(value)) return value;
+      return value ? [value] : []; // Wrap single string in array, or return empty
+    };
 
-    const existing = await Saree.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
+    const colors = parseToArray("colors");
+    const materials = parseToArray("materials");
+
+    // 2. Validation
+    if (!name || !price || !category) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "Images required" });
+    }
+
+    // 3. Check Duplicate
+    const existing = await Saree.findOne({ 
+      name: { $regex: new RegExp("^" + name.trim() + "$", "i") } 
+    });
     if (existing) return res.status(400).json({ message: "Saree already exists" });
 
+    // 4. Upload to Cloudinary
     const uploaded = await Promise.all(
       req.files.map(
         (file) =>
           new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream({ folder: "sarees" }, (err, result) => {
-              if (err) reject(err);
-              else resolve(result);
-            });
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "sarees" }, 
+              (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+              }
+            );
             stream.end(file.buffer);
           })
       )
     );
 
- const newSaree = new Saree({
-  name: name.trim(),
-  slug: slugify(name.trim(), { lower: true, strict: true }), // ✅ auto slug
-  price,
-  images: uploaded.map((img) => ({
-    url: img.secure_url,
-    publicId: img.public_id,
-  })),
-  colors: Array.isArray(colors) ? colors : [colors],
-  materials: Array.isArray(materials) ? materials : [materials],
-  sareeType,
-  category,
-  videoId,
-  stock,
-  isActive: true,
-});
+    // 5. Create Database Entry
+    const newSaree = new Saree({
+      name: name.trim(),
+      slug: slugify(name.trim(), { lower: true, strict: true }),
+      price: Number(price), // Ensure it's a number
+      images: uploaded.map((img) => ({
+        url: img.secure_url,
+        publicId: img.public_id,
+      })),
+      colors: colors,
+      materials: materials,
+      sareeType,
+      category,
+      videoId,
+      stock: Number(stock) || 0,
+      isActive: true,
+    });
 
     await newSaree.save();
     res.status(201).json({ message: "Saree added successfully", data: newSaree });
+
   } catch (err) {
     console.error("ADD SAREE ERROR:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
-
 // ===============================
 // ✅ UPDATE SAREE
 app.put("/admin-home/updateSaree/:id", upload.array("images", 5), async (req, res) => {
   try {
     const { id } = req.params;
     const { name, price, sareeType, category, videoId, stock, isActive } = req.body;
-    const colors = req.body["colors[]"];
-    const materials = req.body["materials[]"];
 
+    // 1. Find the saree first
     const saree = await Saree.findById(id);
     if (!saree) return res.status(404).json({ message: "Saree not found" });
 
+    // 2. Handle Name & Slug (Check for duplicates excluding current ID)
     if (name) {
-  const existing = await Saree.findOne({ 
-    name: { $regex: new RegExp("^" + name + "$", "i") }, 
-    _id: { $ne: id } 
-  });
-  if (existing) return res.status(400).json({ message: "Saree name already exists" });
+      const trimmedName = name.trim();
+      const existing = await Saree.findOne({ 
+        name: { $regex: new RegExp("^" + trimmedName + "$", "i") }, 
+        _id: { $ne: id } 
+      });
+      if (existing) return res.status(400).json({ message: "Saree name already exists" });
 
-  saree.name = name.trim();
-  saree.slug = slugify(name.trim(), { lower: true, strict: true }); // ✅ update slug too
-}
-
-    saree.price = price ?? saree.price;
-    saree.sareeType = sareeType ?? saree.sareeType;
-    saree.category = category ?? saree.category;
-    saree.videoId = videoId ?? saree.videoId;
-    saree.stock = stock ?? saree.stock;
-    if (isActive !== undefined) saree.isActive = isActive === "true" || isActive === true;
-    if (colors) saree.colors = Array.isArray(colors) ? colors : [colors];
-    if (materials) saree.materials = Array.isArray(materials) ? materials : [materials];
-
-    if (req.files && req.files.length > 0) {
-  // Delete old images from Cloudinary
-  if (saree.images?.length) {
-    for (const img of saree.images) {
-      await cloudinary.uploader.destroy(img.publicId);
+      saree.name = trimmedName;
+      saree.slug = slugify(trimmedName, { lower: true, strict: true });
     }
-  }
 
-  // Upload new images
-  const uploaded = await Promise.all(
-    req.files.map(
-      (file) =>
-        new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: "sarees" },
-            (err, result) => {
-              if (err) reject(err);
-              else resolve(result);
-            }
-          );
-          stream.end(file.buffer);
-        })
-    )
-  );
+    // 3. Robust Array Handling for Colors and Materials
+    // We check both "field" and "field[]" to be safe
+    const updateArrayField = (fieldName) => {
+      const val = req.body[fieldName] || req.body[`${fieldName}[]`];
+      if (val === undefined) return; // Don't update if field is missing from request
+      saree[fieldName] = Array.isArray(val) ? val : (val ? [val] : []);
+    };
 
-  saree.images = uploaded.map((img) => ({
-    url: img.secure_url,
-    publicId: img.public_id,
-  }));
-}
+    updateArrayField("colors");
+    updateArrayField("materials");
 
+    // 4. Update Simple Fields
+    if (price !== undefined) saree.price = Number(price);
+    if (stock !== undefined) saree.stock = Number(stock);
+    if (sareeType !== undefined) saree.sareeType = sareeType;
+    if (category !== undefined) saree.category = category;
+    if (videoId !== undefined) saree.videoId = videoId;
+    
+    // Handle Boolean correctly (FormData sends strings)
+    if (isActive !== undefined) {
+      saree.isActive = isActive === "true" || isActive === true;
+    }
+
+    // 5. Image Management
+    if (req.files && req.files.length > 0) {
+      // Delete old images from Cloudinary before replacing
+      if (saree.images && saree.images.length > 0) {
+        await Promise.all(
+          saree.images.map(img => cloudinary.uploader.destroy(img.publicId))
+        );
+      }
+
+      // Upload new images
+      const uploaded = await Promise.all(
+        req.files.map((file) =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "sarees" },
+              (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+              }
+            );
+            stream.end(file.buffer);
+          })
+        )
+      );
+
+      saree.images = uploaded.map((img) => ({
+        url: img.secure_url,
+        publicId: img.public_id,
+      }));
+    }
+
+    // 6. Save changes
     await saree.save();
     res.json({ message: "Saree updated successfully", data: saree });
+
   } catch (err) {
     console.error("UPDATE SAREE ERROR:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
@@ -401,21 +442,32 @@ app.put("/admin-home/updateSaree/:id", upload.array("images", 5), async (req, re
 app.delete("/admin-home/deleteSaree/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // 1. Find the saree first to get image IDs
     const saree = await Saree.findById(id);
     if (!saree) return res.status(404).json({ message: "Saree not found" });
 
-    // Delete images from Cloudinary
-    if (saree.images?.length) {
-      for (const img of saree.images) {
-        await cloudinary.uploader.destroy(img.publicId);
+    // 2. Delete all images from Cloudinary in PARALLEL
+    if (saree.images && saree.images.length > 0) {
+      try {
+        const deletePromises = saree.images.map(img => 
+          cloudinary.uploader.destroy(img.publicId)
+        );
+        await Promise.all(deletePromises);
+      } catch (cloudErr) {
+        // We log this but continue deleting the DB record 
+        // to prevent "ghost" records if Cloudinary fails
+        console.error("Cloudinary Cleanup Warning:", cloudErr);
       }
     }
 
+    // 3. Delete from MongoDB
     await Saree.findByIdAndDelete(id);
-    res.json({ message: "Saree deleted successfully" });
+
+    res.json({ message: "Saree and associated images deleted successfully" });
   } catch (err) {
     console.error("DELETE SAREE ERROR:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
