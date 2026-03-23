@@ -172,16 +172,18 @@ app.post("/admin-home/AddCategory", upload.array("images", 3), async (req, res) 
       )
     );
 
-    const newCategory = new Category({
-      name,
-      description,
-      images: uploaded.map((img) => img.secure_url),
-      imagePublicIds: uploaded.map((img) => img.public_id),
-      isActive: isActive === "true" || isActive === true,
-    });
+  const newCategory = new Category({
+  name,
+  description,
+  images: uploaded.map((img) => ({
+    url: img.secure_url,
+    publicId: img.public_id,
+  })),
+  isActive: isActive === "true" || isActive === true,
+});
 
-    await newCategory.save();
-    res.status(201).json({ message: "Category added successfully", data: newCategory });
+await newCategory.save();
+res.status(201).json({ message: "Category added successfully", data: newCategory });
   } catch (err) {
     console.error("ADD CATEGORY ERROR:", err);
     res.status(500).json({ message: "Server Error" });
@@ -208,26 +210,35 @@ app.put("/admin-home/updateCategory/:id", upload.array("images", 3), async (req,
     if (isActive !== undefined) category.isActive = isActive === "true" || isActive === true;
 
     if (req.files && req.files.length > 0) {
-      if (category.imagePublicIds?.length) {
-        for (const id of category.imagePublicIds) await cloudinary.uploader.destroy(id);
-      }
-
-      const uploaded = await Promise.all(
-        req.files.map(
-          (file) =>
-            new Promise((resolve, reject) => {
-              const stream = cloudinary.uploader.upload_stream({ folder: "categories" }, (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-              });
-              stream.end(file.buffer);
-            })
-        )
-      );
-
-      category.images = uploaded.map((img) => img.secure_url);
-      category.imagePublicIds = uploaded.map((img) => img.public_id);
+  // Delete old images from Cloudinary
+  if (category.images?.length) {
+    for (const img of category.images) {
+      await cloudinary.uploader.destroy(img.publicId);
     }
+  }
+
+  // Upload new images
+  const uploaded = await Promise.all(
+    req.files.map(
+      (file) =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "categories" },
+            (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+            }
+          );
+          stream.end(file.buffer);
+        })
+    )
+  );
+
+  category.images = uploaded.map((img) => ({
+    url: img.secure_url,
+    publicId: img.public_id,
+  }));
+}
 
     await category.save();
     res.json({ message: "Category updated successfully", data: category });
@@ -248,9 +259,11 @@ app.delete("/admin-home/deleteCategory/:id", async (req, res) => {
     const sarees = await Saree.find({ category: id });
     if (sarees.length > 0) return res.status(400).json({ message: "Cannot delete category with existing sarees" });
 
-    if (category.imagePublicIds?.length) {
-      for (const id of category.imagePublicIds) await cloudinary.uploader.destroy(id);
-    }
+  if (category.images?.length) {
+  for (const img of category.images) {
+    await cloudinary.uploader.destroy(img.publicId);
+  }
+}
 
     await Category.findByIdAndDelete(id);
     res.json({ message: "Category deleted successfully" });
