@@ -1,3 +1,5 @@
+import About from "./AboutUS";
+import ContactUs from "./ContactUS";
 import SareeCards from "./SareeCards";
 import { useNavigate } from "react-router-dom";
 const Body = () => {
@@ -22,6 +24,12 @@ const Body = () => {
 
       <div className="cards-section">
         <SareeCards />
+      </div>
+      <div className="Cards-section">
+        <About />
+      </div>
+        <ContactUs />
+      <div>
       </div>
     </section>
   );
