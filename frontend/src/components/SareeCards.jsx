@@ -17,25 +17,31 @@ const SareeCards = () => {
       .catch((err) => console.log("Error:", err));
   }, []);
 
-  return (
-    <section className="CardMainDiv">
-      {categories.map((item) => (
+  // ... inside SareeCards.jsx return statement
+return (
+  <section className="CardMainDiv horizontal-scroll"> {/* Added horizontal-scroll class */}
+    {categories.length === 0 ? (
+      <p>Loading categories...</p>
+    ) : (
+      categories.map((item) => (
         <div
           className="card"
           key={item._id}
-          onClick={() => navigate(`/saree/${item._id}`)} // ✅ fixed path
-          style={{ cursor: "pointer" }}
+          onClick={() => navigate(`/saree/${item._id}`)}
         >
-          {/* ✅ FIRST IMAGE */}
-          
-          <img src={item.images?.[0]?.url} alt={item.name} width="200" />
-
+          <img 
+            src={item.images?.[0]?.url || "/placeholder.jpg"} 
+            alt={item.name} 
+            className="ImageClass" 
+          />
           <h4>{item.name}</h4>
-          <p>{item.description}</p>
+          <p className="text-sm opacity-80">{item.description}</p>
         </div>
-      ))}
-    </section>
-  );
+      ))
+    )}
+  </section>
+);
+  
 };
 
 export default SareeCards;

@@ -21,13 +21,13 @@ const CategorySarees = () => {
       ) : (
         sarees.map((item) => (
           <div className="card" key={item._id}>
-            
+
             {/* ✅ FIRST IMAGE */}
             <img
-  src={item.images?.[0]?.url || "/placeholder.jpg"}
-  alt={item.name}
-  width="200"
-/>
+              src={item.images?.[0]?.url || "/placeholder.jpg"}
+              alt={item.name}
+              width="200"
+            />
 
             <h4>{item.name}</h4>
 

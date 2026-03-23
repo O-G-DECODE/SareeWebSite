@@ -9,12 +9,8 @@ const Body = () => {
       {/* Hero section */}
       <div className="body-container">
         <h1 className="welcome-text">
-          Welcome to Sarees By Kalyani
+          Welcome to Sarees By<span> Kalyani</span> 
         </h1>
-
-        <p className="quote-text">
-          Timeless elegance woven into every saree
-        </p>
 
         <button className="explore-btn" onClick={()=>navigate("/explore") }>  Explore Collection </button>
       </div>
