@@ -8,7 +8,6 @@ function ProductList({ products }) {
         <h2 className="product-count">
           <span>{products.length}</span> {products.length === 1 ? 'Saree' : 'Sarees'} Found
         </h2>
-        <p className="product-sort-label">Curated Collection</p>
       </div>
 
       <div className="product-grid">

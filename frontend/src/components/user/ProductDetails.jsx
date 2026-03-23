@@ -7,6 +7,7 @@ function ProductDetails() {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
+  const [activeImage, setActiveImage] = useState(""); // ✅ Tracks the main view
 
   useEffect(() => {
     fetch(`https://sareewebsite.onrender.com/sarees`)
@@ -15,43 +16,63 @@ function ProductDetails() {
         const item = data.find((p) => p._id === id);
 
         if (item) {
-          setProduct({
-  id: item._id,
-  name: item.name,
-  price: item.price,
-
-  // ✅ FIX IMAGE
-  image: item.images?.[0]?.url,
-
-  // ✅ FIX ARRAY DATA
-  color: item.colors?.join(", "),
-  fabric: item.materials?.join(", "),
-
-  description: item.sareeType,
-});
+          const mappedProduct = {
+            id: item._id,
+            name: item.name,
+            price: item.price,
+            images: item.images || [], // ✅ All images
+            color: item.colors?.join(", "),
+            fabric: item.materials?.join(", "),
+            description: item.sareeType,
+          };
+          setProduct(mappedProduct);
+          // ✅ Set the first image as default
+          setActiveImage(item.images?.[0]?.url || "/no-image.png");
         }
       });
   }, [id]);
 
-  if (!product) return <p>Loading...</p>;
+  if (!product) return <p className="loading">Loading...</p>;
 
   return (
     <div className="explore-app">
       <div className="product-details-container">
         <button className="back-btn" onClick={() => navigate("/explore")}>
-          ← Back
+          ← Back to Collection
         </button>
 
         <div className="product-details">
-          <div className="details-image">
-            <img src={product.image} alt={product.name} />
+          {/* LEFT: IMAGE SECTION */}
+          <div className="details-image-section">
+            <div className="main-image-container">
+              <img src={activeImage} alt={product.name} className="main-view-img" />
+            </div>
+
+            {/* ✅ THUMBNAIL TRACK */}
+            <div className="thumbnail-track">
+              {product.images.map((img, index) => (
+                <div 
+                  key={index} 
+                  className={`thumbnail-item ${activeImage === img.url ? "active" : ""}`}
+                  onClick={() => setActiveImage(img.url)}
+                >
+                  <img src={img.url} alt={`View ${index + 1}`} />
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* RIGHT: INFO SECTION */}
           <div className="details-info">
             <h1 className="details-title">{product.name}</h1>
-            <p>{product.fabric} • {product.color}</p>
+            <div className="details-meta">
+              <span><strong>Fabric:</strong> {product.fabric}</span>
+              <span><strong>Color:</strong> {product.color}</span>
+            </div>
             <p className="details-description">{product.description}</p>
-            <h2 className="details-price">₹ {product.price}</h2>
+            <h2 className="details-price">₹ {new Intl.NumberFormat('en-IN').format(product.price)}</h2>
+            
+            <button className="buy-btn">Inquiry on WhatsApp</button>
           </div>
         </div>
       </div>

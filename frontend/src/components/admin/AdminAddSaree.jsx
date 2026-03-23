@@ -6,9 +6,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 function AdminAddSaree() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [images, setImages] = useState([]); // ✅ multiple images
-  const [colors, setColors] = useState([]); // ✅ multiple colors
-  const [materials, setMaterials] = useState([]); // ✅ multiple materials
+  const [images, setImages] = useState([]);
+  // ✅ Changed to strings for text input
+  const [colorsText, setColorsText] = useState(""); 
+  const [materialsText, setMaterialsText] = useState("");
   const [sareeType, setSareeType] = useState("");
   const [category, setCategory] = useState("");
   const [videoId, setVideoId] = useState("");
@@ -17,22 +18,12 @@ function AdminAddSaree() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // fetch categories
   useEffect(() => {
     fetch(`${API_URL}/`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
   }, []);
-
-  // ✅ handle multi select (checkbox style)
-  const handleMultiChange = (value, list, setList) => {
-    if (list.includes(value)) {
-      setList(list.filter((item) => item !== value));
-    } else {
-      setList([...list, value]);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,14 +44,16 @@ function AdminAddSaree() {
     formData.append("videoId", videoId);
     formData.append("stock", stock);
 
-    // ✅ append multiple images
-    for (let i = 0; i < images.length; i++) {
-      formData.append("images", images[i]);
-    }
+    Array.from(images).forEach((file) => {
+      formData.append("images", file);
+    });
 
-    // ✅ append arrays
-    colors.forEach((c) => formData.append("colors[]", c));
-    materials.forEach((m) => formData.append("materials[]", m));
+    // ✅ CONVERT TEXT TO ARRAY: Split by comma, trim whitespace, remove empty strings
+    const colorsArray = colorsText.split(",").map(c => c.trim()).filter(c => c !== "");
+    const materialsArray = materialsText.split(",").map(m => m.trim()).filter(m => m !== "");
+
+    colorsArray.forEach((c) => formData.append("colors", c));
+    materialsArray.forEach((m) => formData.append("materials", m));
 
     try {
       const res = await fetch(`${API_URL}/admin-home/addSaree`, {
@@ -69,22 +62,23 @@ function AdminAddSaree() {
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+
       alert(data.message);
 
-      // reset
+      // Reset
       setName("");
       setPrice("");
       setImages([]);
-      setColors([]);
-      setMaterials([]);
+      setColorsText("");
+      setMaterialsText("");
       setSareeType("");
       setCategory("");
       setVideoId("");
       setStock("");
-
     } catch (err) {
       console.error(err);
-      alert("Failed to add saree");
+      alert(err.message || "Failed to add saree");
     } finally {
       setLoading(false);
     }
@@ -111,7 +105,6 @@ function AdminAddSaree() {
           required
         />
 
-        {/* ✅ MULTIPLE IMAGES */}
         <input
           type="file"
           multiple
@@ -119,35 +112,24 @@ function AdminAddSaree() {
           onChange={(e) => setImages(e.target.files)}
         />
 
-        {/* ✅ COLORS */}
-        <div>
-          <p>Select Colors:</p>
-          {["Red", "Blue", "Green", "Black", "White", "Gold"].map((c) => (
-            <label key={c}>
-              <input
-                type="checkbox"
-                checked={colors.includes(c)}
-                onChange={() => handleMultiChange(c, colors, setColors)}
-              />
-              {c}
-            </label>
-          ))}
-        </div>
+        {/* ✅ NEW TEXT INPUTS FOR COLORS & MATERIALS */}
+        <input
+          type="text"
+          placeholder="Colors (e.g. Red, Blue, Gold)"
+          value={colorsText}
+          onChange={(e) => setColorsText(e.target.value)}
+          required
+        />
+        <small>Separate colors with commas</small>
 
-        {/* ✅ MATERIALS */}
-        <div>
-          <p>Select Materials:</p>
-          {["Silk", "Cotton", "Linen", "Chiffon"].map((m) => (
-            <label key={m}>
-              <input
-                type="checkbox"
-                checked={materials.includes(m)}
-                onChange={() => handleMultiChange(m, materials, setMaterials)}
-              />
-              {m}
-            </label>
-          ))}
-        </div>
+        <input
+          type="text"
+          placeholder="Materials (e.g. Silk, Cotton, Linen)"
+          value={materialsText}
+          onChange={(e) => setMaterialsText(e.target.value)}
+          required
+        />
+        <small>Separate materials with commas</small>
 
         <select
           value={sareeType}

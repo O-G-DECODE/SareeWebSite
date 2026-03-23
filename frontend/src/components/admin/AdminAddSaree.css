@@ -1,73 +1,106 @@
-/* Page Wrapper */
+/* Container for Add/Edit Forms */
 .admin-form-container {
-  max-width: 520px;
-  margin: 50px auto;
-  padding: 30px;
+  max-width: 650px; /* Slightly wider for better readability */
+  margin: 20px auto;
+  padding: 40px;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 4px; /* Sharp, high-end edges */
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
 }
 
-/* Title */
 .admin-form-container h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
   text-align: center;
-  margin-bottom: 25px;
-  color: #333;
+  margin-bottom: 35px;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
 }
 
-/* Form Layout */
 .admin-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
-/* Inputs + Select */
+/* Group labels for text inputs */
+.admin-form label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--warm-gray);
+  margin-bottom: -15px;
+  font-weight: 600;
+}
+
 .admin-form input,
-.admin-form select {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+.admin-form select,
+.admin-form textarea {
+  padding: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: #fcfcfb;
+  font-size: 15px;
+  color: var(--text-dark);
   transition: all 0.2s ease;
 }
 
-/* Focus Effect */
 .admin-form input:focus,
 .admin-form select:focus {
   outline: none;
-  border-color: #4cafef;
-  box-shadow: 0 0 0 2px rgba(76, 175, 239, 0.15);
+  border-color: var(--accent-gold);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(181, 136, 42, 0.1);
 }
 
-/* File Input */
+/* Multi-file input styling */
 .admin-form input[type="file"] {
-  padding: 8px;
-  background: #fafafa;
-}
-
-/* Button */
-.admin-form button {
-  margin-top: 10px;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #4cafef;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
+  background: #f8f6f2;
+  border: 1px dashed var(--accent-gold);
+  padding: 20px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.admin-form button:hover {
-  background: #3b9ddd;
+.admin-form small {
+  color: var(--warm-gray);
+  font-style: italic;
+  margin-top: -10px;
+  font-size: 0.8rem;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
+/* Submit Button - The "Saree" Color */
+.admin-form button[type="submit"] {
+  margin-top: 20px;
+  padding: 16px;
+  border: none;
+  border-radius: 4px;
+  background: var(--brand-green);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-form button[type="submit"]:hover {
+  background: #05330a;
+  box-shadow: 0 5px 15px rgba(7, 67, 14, 0.2);
+  transform: translateY(-1px);
+}
+
+.admin-form button[type="submit"]:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .admin-form-container {
-    margin: 20px;
-    padding: 20px;
+    padding: 25px;
+    margin: 10px;
   }
 }

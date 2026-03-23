@@ -1,44 +1,73 @@
-.admin-container {
-  display: flex;
-  height: 100vh;
-  background: #f5f1f1;
+/* ─── Admin Layout Strategy ─────────────────────────────────── */
+:root {
+  --admin-bg: #f8f6f2;
+  --sidebar-bg: #ffffff;
+  --brand-green: #07430e;
+  --accent-gold: #b5882a;
+  --text-dark: #2a2118;
+  --border-color: #e2ddd3;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Top bar */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--admin-bg);
+  padding-top: 60px; /* Offset for Topbar */
+}
+
+/* Top bar - Luxury Green & Gold */
 .admin-topbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 60px;
-  background: hwb(149 16% 52%);
+  background: var(--brand-green);
   color: white;
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 24px;
   z-index: 1000;
+  border-bottom: 2px solid var(--accent-gold);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.admin-topbar h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
 }
 
 .menu-btn {
-  font-size: 24px;
-  background: none;
-  border: none;
+  font-size: 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
   color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
   cursor: pointer;
   margin-right: 16px;
+  transition: var(--transition-smooth);
 }
 
-/* Drawer */
+.menu-btn:hover {
+  background: var(--accent-gold);
+}
+
+/* Sidebar Drawer - Clean & Minimalist */
 .admin-drawer {
   position: fixed;
   top: 60px;
-  left: -240px;
-  width: 240px;
+  left: -260px;
+  width: 260px;
   height: calc(100vh - 60px);
-  background: hwb(0 98% 2%);
-  padding: 20px;
-  transition: left 0.3s ease;
+  background: var(--sidebar-bg);
+  padding: 30px 20px;
+  transition: left var(--transition-smooth);
   z-index: 1001;
+  border-right: 1px solid var(--border-color);
+  box-shadow: 10px 0 30px rgba(0,0,0,0.03);
 }
 
 .admin-drawer.open {
@@ -47,33 +76,46 @@
 
 .admin-drawer button {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  background: #0ba26d;
-  color: rgb(255, 255, 255);
-  border: none;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  background: transparent;
+  color: var(--text-dark);
+  border: 1px solid transparent;
+  border-radius: 6px;
   cursor: pointer;
   text-align: left;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: var(--transition-smooth);
 }
 
 .admin-drawer button:hover {
-  background: #15711a;
+  background: #f0ede6;
+  color: var(--brand-green);
+  padding-left: 25px; /* Slight slide effect */
 }
 
-/* Content */
+/* Active State for Drawer Buttons */
+.admin-drawer button.active {
+  background: var(--brand-green);
+  color: white;
+  border-color: var(--accent-gold);
+}
+
 .admin-content {
-  padding: 20px;
+  padding: 40px;
   width: 100%;
-  padding-bottom: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Overlay for mobile */
 .overlay {
   position: fixed;
   top: 60px;
   left: 0;
   width: 100%;
   height: calc(100vh - 60px);
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(42, 33, 24, 0.3);
+  backdrop-filter: blur(2px);
   z-index: 1000;
 }
