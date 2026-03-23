@@ -1,28 +1,23 @@
 const About = () => {
   return (
-    <section id="about" className="page">
-      <h2>About Us</h2>
+    <section id="about" className="about-section container-padding">
+      <div className="about-content">
+        <h2 className="section-title">Our Store</h2>
+        
+        <div className="store-card">
+          <h3 className="store-brand">Sarees By Kalyani</h3>
+          
+          <div className="address-details">
+            <p>Poribazar, Kodungallur</p>
+            <p>Thrissur, Kerala – 680671</p>
+            <p>India</p>
+          </div>
 
-      <p>
-        Sarees By Kalyani is dedicated to bringing you authentic,
-        high-quality sarees sourced from skilled artisans across India.
-        We carefully curate both traditional and contemporary designs
-        to suit weddings, festivals, and everyday elegance.
-      </p>
-
-      <p>
-        Our mission is to preserve India’s rich textile heritage while
-        making beautiful, handcrafted sarees accessible to everyone.
-        Each piece reflects timeless craftsmanship and cultural pride.
-      </p>
-
-      <h2>Our Store</h2>
-      <p>
-        <strong>Sarees By Kalyani</strong><br />
-        Poribazar, Kodungallur<br />
-        Kerala, – 680671<br />
-        India
-      </p>
+          <div className="store-badge">
+            Authentic Handpicked Collections
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

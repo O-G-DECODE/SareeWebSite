@@ -1,33 +1,37 @@
-import About from "./AboutUS";
-import ContactUs from "./ContactUS";
+import ContactUS from "./ContactUS";
 import SareeCards from "./SareeCards";
 import { useNavigate } from "react-router-dom";
+
 const Body = () => {
   const navigate = useNavigate();
   return (
-    <section id="home">
-      {/* Hero section */}
-      <div className="body-container">
-        <h1 className="welcome-text">
-          Welcome to Sarees By<span> Kalyani</span> 
-        </h1>
+    <main className="main-layout" id="home">
+      {/* 1. Hero Section: The Grand Entrance */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <span className="hero-subtitle">Handpicked Elegance</span>
+          <h1 className="welcome-text">
+            Welcome to Sarees By <span>Kalyani</span> 
+          </h1>
+          <button className="explore-btn" onClick={() => navigate("/explore")}>
+            Explore Collection
+          </button>
+        </div>
+      </section>
 
-        <button className="explore-btn" onClick={()=>navigate("/explore") }>  Explore Collection </button>
-      </div>
-      <div>
-        <h2 id="h2"> Major Categories</h2>
-      </div>
-
-      <div>
+      {/* 2. Categories Section: The Discovery Row */}
+      <section className="category-showcase container-padding">
+        <div className="section-header">
+          <h2 className="section-title">Major Categories</h2>
+          <div className="title-underline"></div>
+        </div>
         <SareeCards />
-      </div>
-      <div >
-        <About />
-      </div>
-        <ContactUs />
-      <div>
-      </div>
-    </section>
+      </section>
+
+      {/* 3. The Grand Finale: Contact & Store Hub */}
+      <ContactUS />
+      
+    </main>
   );
 };
 

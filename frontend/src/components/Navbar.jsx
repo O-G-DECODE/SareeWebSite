@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Prevent background scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
@@ -12,42 +11,46 @@ const Navbar = () => {
   return (
     <>
       <nav className="navbar">
-        <button className="menu-btn" onClick={() => setIsOpen(true)}>
-          ☰
-        </button>
-        <div className="brand">
-  <img
-    src="https://res.cloudinary.com/dlmwgotxp/image/upload/v1772525943/logo_wffhb4.png"
-    alt="Sarees By Kalyani Logo"
-    className="brand-logo"
-  />
-  <h2 className="logo-text">Sarees By Kalyani</h2>
-</div>
-
+        <div className="navbar-container">
+          <button className="menu-btn" onClick={() => setIsOpen(true)}>
+            <span className="menu-icon-line"></span>
+            <span className="menu-icon-line short"></span>
+          </button>
+          
+          <div className="brand">
+            <img
+              src="https://res.cloudinary.com/dlmwgotxp/image/upload/v1772525943/logo_wffhb4.png"
+              alt="Logo"
+              className="brand-logo"
+            />
+            <h2 className="logo-text">Sarees By <span>Kalyani</span></h2>
+          </div>
+        </div>
       </nav>
 
-      {/* Overlay */}
-      {isOpen && (
-        <div className="overlay" onClick={() => setIsOpen(false)} />
-      )}
+      {isOpen && <div className="overlay" onClick={() => setIsOpen(false)} />}
 
-      {/* Side Menu */}
       <aside className={`side-menu ${isOpen ? "open" : ""}`}>
-        <button className="close-btn" onClick={() => setIsOpen(false)}>
-          ✕
-        </button>
+        <div className="menu-header">
+          <span className="menu-title">Menu</span>
+          <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
+        </div>
 
-        <ul>
+        <ul className="nav-links">
           <li><a href="/" onClick={() => setIsOpen(false)}>Home</a></li>
-          <li><a href="/explore" onClick={() => setIsOpen(false)}>Products</a></li>
-          <li><a href="#offers" onClick={() => setIsOpen(false)}>Offers</a></li>
-          <li><a href="#about" onClick={() => setIsOpen(false)}>About</a></li>
-          <li><a href="#contact" onClick={() => setIsOpen(false)}>Contact</a></li>
-         <li onClick={() => setIsOpen(false)}> <Link to="/login">Admin Login</Link></li>
+          <li><a href="/explore" onClick={() => setIsOpen(false)}>Our Collection</a></li>
+          <li><a href="#offers" onClick={() => setIsOpen(false)}>Special Offers</a></li>
+          <li><a href="#about" onClick={() => setIsOpen(false)}>About Our Store</a></li>
+          <li><a href="#contact" onClick={() => setIsOpen(false)}>Contact Us</a></li>
         </ul>
+
+        <div className="menu-footer">
+          <Link to="/login" className="admin-link" onClick={() => setIsOpen(false)}>
+            Admin Portal
+          </Link>
+        </div>
       </aside>
 
-      {/* Push content below navbar */}
       <div className="navbar-spacer"></div>
     </>
   );
