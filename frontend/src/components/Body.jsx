@@ -15,13 +15,13 @@ const Body = () => {
         <button className="explore-btn" onClick={()=>navigate("/explore") }>  Explore Collection </button>
       </div>
       <div>
-        <h2> Major Categories</h2>
+        <h2 id="h2"> Major Categories</h2>
       </div>
 
-      <div className="cards-section">
+      <div>
         <SareeCards />
       </div>
-      <div className="Cards-section">
+      <div >
         <About />
       </div>
         <ContactUs />
