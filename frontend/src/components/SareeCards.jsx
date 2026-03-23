@@ -27,11 +27,8 @@ const SareeCards = () => {
           style={{ cursor: "pointer" }}
         >
           {/* ✅ FIRST IMAGE */}
-          <img
-            src={item.images?.[0]}
-            alt={item.name}
-            width="200"
-          />
+          
+          <img src={item.images?.[0]?.url} alt={item.name} width="200" />
 
           <h4>{item.name}</h4>
           <p>{item.description}</p>
