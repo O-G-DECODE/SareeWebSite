@@ -19,28 +19,33 @@ function ExploreProducts() {
 
   // 🔥 FETCH FROM BACKEND
   useEffect(() => {
-    fetch("https://sareewebsite.onrender.com/sarees") // <-- change if needed
-      .then((res) => res.json())
-      .then((data) => {
-        // 🔄 map backend → frontend format
-        const mapped = data.map((item) => ({
-          id: item._id,
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          color: item.color,
-          fabric: item.material, // 🔥 important mapping
-          description: item.sareeType || "Premium Saree",
-        }));
+ fetch("https://sareewebsite.onrender.com/sarees")
+ .then(async (res) => {
+      if (!res.ok) { 
+        const text = await res.text();
+        throw new Error(text);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      const mapped = data.map((item) => ({
+  id: item._id,
+  name: item.name,
+  price: item.price,
+  image: item.images?.[0]?.url,
+  colors: item.colors || [],
+  materials: item.materials || [],
+  description: item.sareeType || "Premium Saree",
+}));
 
-        setProducts(mapped);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+      setProducts(mapped);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Fetch error:", err);
+      setLoading(false);
+    });
+}, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {

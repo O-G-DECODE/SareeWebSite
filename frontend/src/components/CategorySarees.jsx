@@ -24,10 +24,10 @@ const CategorySarees = () => {
             
             {/* ✅ FIRST IMAGE */}
             <img
-              src={item.images?.[0]}
-              alt={item.name}
-              width="200"
-            />
+  src={item.images?.[0]?.url || "/placeholder.jpg"}
+  alt={item.name}
+  width="200"
+/>
 
             <h4>{item.name}</h4>
 

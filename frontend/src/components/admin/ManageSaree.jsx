@@ -37,7 +37,7 @@ function ManageSaree() {
   useEffect(() => {
     if (!selectedCategory) return;
 
-    fetch(`${API_URL}/admin-home/sarees/${selectedCategory}`)
+fetch(`${API_URL}/sarees/category/${selectedCategory}`)
       .then((res) => res.json())
       .then((data) => setSarees(data))
       .catch(console.error);
@@ -45,26 +45,27 @@ function ManageSaree() {
 
   // select saree
   const handleSelectSaree = (id) => {
-    const s = sarees.find((s) => s._id === id);
-    if (!s) return;
+  const s = sarees.find((s) => String(s._id) === String(id));
+  if (!s) return;
 
-    setSelectedSareeId(id);
+  setSelectedSareeId(id);
 
-    setFormData({
-      name: s.name,
-      price: s.price,
-      colors: s.colors || [],
-      materials: s.materials || [],
-      sareeType: s.sareeType,
-      category: s.category,
-      videoId: s.videoId || "",
-      stock: s.stock,
-      isActive: s.isActive,
-    });
+  setFormData({
+    name: s.name || "",
+    price: s.price || "",
+    colors: s.colors || [],
+    materials: s.materials || [],
+    sareeType: s.sareeType || "",
+    category: s.category || "",
+    videoId: s.videoId || "",
+    stock: s.stock || "",
+    isActive: s.isActive ?? true,
+  });
 
-    setPreview(s.images || []);
-    setImages([]);
-  };
+  // ✅ FIXED
+  setPreview(s.images?.map((img) => img.url) || []);
+  setImages([]);
+};
 
   // multi select toggle
   const toggleValue = (value, list, key) => {

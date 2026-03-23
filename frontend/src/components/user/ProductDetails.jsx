@@ -16,14 +16,19 @@ function ProductDetails() {
 
         if (item) {
           setProduct({
-            id: item._id,
-            name: item.name,
-            price: item.price,
-            image: item.image,
-            color: item.color,
-            fabric: item.material,
-            description: item.sareeType,
-          });
+  id: item._id,
+  name: item.name,
+  price: item.price,
+
+  // ✅ FIX IMAGE
+  image: item.images?.[0]?.url,
+
+  // ✅ FIX ARRAY DATA
+  color: item.colors?.join(", "),
+  fabric: item.materials?.join(", "),
+
+  description: item.sareeType,
+});
         }
       });
   }, [id]);

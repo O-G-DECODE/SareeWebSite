@@ -69,7 +69,7 @@
 .explore-app .search-bar input {
   width: 100%;
   padding: 10px 16px 10px 40px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(239, 229, 229, 0.08);
   border: 1px solid #b5882a;
   color: white;
 }
@@ -166,7 +166,7 @@
 }
 
 .explore-app .filters-header {
-  background: #2a2118;
+  background: #07430e;
   color: #fff;
   padding: 10px;
   display: flex;
@@ -234,11 +234,12 @@
 /* ─── Header ───────────────────────────────────────── */
 
 .explore-app .explore-header {
-  background-color: #2a2118;
+  background-color: rgb(11, 118, 72);
   color: #faf7f2;
   border-bottom: 3px solid #b5882a;
   position: sticky;
   top: 0;
+  margin-bottom: 20px;
   z-index: 50;
 }
 
@@ -275,9 +276,35 @@
   font-size: 1.2rem;
 }
 
-.explore-app .explore-header-search {
-  flex: 1;
-  max-width: 400px;
+/* 1. Ensure the container can wrap on mobile */
+.explore-header-inner {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center;    /* Center everything */
+  gap: 1px;             /* Space between logo, ornament, and search */
+  text-align: center;
+}
+
+/* 2. Set it back to horizontal for Laptops/Tablets */
+@media (min-width: 768px) {
+  .explore-header-inner {
+    flex-direction: row;  /* Side-by-side for big screens */
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+/* 3. Make the search bar full width on mobile */
+@media (max-width: 767px) {
+  .explore-header-search {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px; /* Override your previous 400px limit */
+  }
+  
+  .explore-header-brand {
+    margin-bottom: 1px;
+  }
 }
 
 .explore-app .product-card {
