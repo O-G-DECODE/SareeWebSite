@@ -116,8 +116,19 @@
   width: 100%;
   height: calc(100vh - 60px);
   background: rgba(42, 33, 24, 0.3);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px); /* Increased blur for a better look */
   z-index: 1000;
+  
+  /* ADD THESE LINES to make it invisible by default */
+  opacity: 0;
+  pointer-events: none; 
+  transition: opacity var(--transition-smooth);
+}
+
+/* This class should be toggled by React along with the drawer */
+.overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* ============================================================
