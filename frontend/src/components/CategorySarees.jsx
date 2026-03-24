@@ -15,36 +15,45 @@ const CategorySarees = () => {
   }, [id]);
 
   return (
-    <section className="CardMainDiv">
+    <section className="product-page-container container-padding">
+      <div className="product-header">
+        <h2 className="section-title">Our Collection</h2>
+        <div className="title-underline"></div>
+      </div>
+
       {sarees.length === 0 ? (
-        <p>No sarees found in this category.</p>
+        <div className="loading-state">
+          <p>We are currently updating this collection. Check back soon!</p>
+        </div>
       ) : (
-        sarees.map((item) => (
-          <div className="card" key={item._id}>
+        <div className="product-grid">
+          {sarees.map((item) => (
+            <div className="product-card" key={item._id}>
+              <div className="product-image-wrapper">
+                <img
+                  src={item.images?.[0]?.url || "/placeholder.jpg"}
+                  alt={item.name}
+                />
+                <div className="product-badge">Handpicked</div>
+              </div>
 
-            {/* ✅ FIRST IMAGE */}
-            <img
-              src={item.images?.[0]?.url || "/placeholder.jpg"}
-              alt={item.name}
-              width="200"
-            />
+              <div className="product-info">
+                <h4 className="product-name">{item.name}</h4>
+                
+                <div className="product-meta">
+                  <span className="product-price">₹{item.price}</span>
+                </div>
 
-            <h4>{item.name}</h4>
-
-            <p>₹ {item.price}</p>
-
-            {/* ✅ MATERIALS */}
-            <p>
-              {item.materials?.join(", ")}
-            </p>
-
-            {/* ✅ COLORS */}
-            <p>
-              {item.colors?.join(", ")}
-            </p>
-
-          </div>
-        ))
+                <div className="product-details">
+                  <p><strong>Material:</strong> {item.materials?.join(", ") || "Pure Silk"}</p>
+                  <p><strong>Colors:</strong> {item.colors?.join(", ") || "Multicolor"}</p>
+                </div>
+                
+                <button className="view-details-btn">View Details</button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </section>
   );

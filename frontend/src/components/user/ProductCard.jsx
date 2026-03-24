@@ -69,7 +69,7 @@ function ProductCard({ product }) {
   };
 
   return (
-    <article className="product-card" onClick={handleClick}>
+    <article className="classic-product-card" onClick={handleClick}>
       <div className="card-img-wrap">
         <img
           src={productImage}
@@ -77,36 +77,29 @@ function ProductCard({ product }) {
           className="card-img"
           loading="lazy"
         />
-
-        {/* FABRIC BADGE */}
+        {/* FABRIC BADGE - Clean & Minimal */}
         <span className="card-badge">{fabricText}</span>
-
+        
         {/* COLOR DOT */}
         <span
           className="card-color-dot"
           style={{ backgroundColor: COLOR_MAP[mainColor] || "#ccc" }}
-          title={colorText}
         />
       </div>
 
       <div className="card-body">
         <h3 className="card-name">{name}</h3>
-
-        {/* FABRIC + COLOR */}
-        <p className="card-fabric">
-          {fabricText} · {colorText}
+        
+        <p className="card-meta">
+          {colorText} · {fabricText}
         </p>
 
-        {/* DESCRIPTION */}
-        <p className="card-desc">{descText}</p>
-
         <div className="card-footer">
-          <div>
-            <p className="card-price">{formattedPrice}</p>
-            <p className="card-price-sub">onwards</p>
+          <div className="price-stack">
+            <span className="card-price">{formattedPrice}</span>
+            <span className="card-price-sub">onwards</span>
           </div>
-
-          <span className="card-view-btn">View</span>
+          <span className="card-arrow">→</span>
         </div>
       </div>
     </article>

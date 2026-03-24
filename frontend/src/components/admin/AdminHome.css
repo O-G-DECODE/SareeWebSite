@@ -119,3 +119,135 @@
   backdrop-filter: blur(2px);
   z-index: 1000;
 }
+
+/* ============================================================
+   9. ADMIN LOGIN PAGE (Classic Style)
+   ============================================================ */
+.login-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cream);
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(45, 58, 48, 0.1);
+  border: 1px solid #f0ede6;
+  text-align: center;
+}
+
+.login-header {
+  margin-bottom: 30px;
+}
+
+.login-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+.login-header h2 {
+  font-family: var(--font-display);
+  color: var(--deep-green);
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+.login-header p {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gold-light);
+}
+
+/* Form Styling */
+.login-form {
+  text-align: left;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--deep-green);
+  text-transform: uppercase;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #e2ddd3;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--gold-light);
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--deep-green);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.login-submit-btn:hover {
+  background: #3a4b3d;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.login-error-msg {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin-top: 15px;
+  background: #fdf2f2;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.login-footer {
+  margin-top: 25px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.login-footer a {
+  text-decoration: none;
+  color: #888;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.login-footer a:hover {
+  color: var(--deep-green);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+}

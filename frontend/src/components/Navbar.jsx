@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
+
+  // Helper function to handle navigation and close menu
+  const handleNav = (path) => {
+    setIsOpen(false);
+    navigate(path);
+  };
 
   return (
     <>
@@ -17,13 +24,13 @@ const Navbar = () => {
             <span className="menu-icon-line short"></span>
           </button>
           
-          <div className="brand">
+          <div className="brand" onClick={() => navigate("/")} style={{cursor: 'pointer'}}>
             <img
               src="https://res.cloudinary.com/dlmwgotxp/image/upload/v1772525943/logo_wffhb4.png"
               alt="Logo"
               className="brand-logo"
             />
-            <h2 className="logo-text">Sarees By <span>Kalyani</span></h2>
+            <h3 className="logo-text">Sarees By <span>Kalyani</span></h3>
           </div>
         </div>
       </nav>
@@ -32,22 +39,25 @@ const Navbar = () => {
 
       <aside className={`side-menu ${isOpen ? "open" : ""}`}>
         <div className="menu-header">
-          <span className="menu-title">Menu</span>
+          <span className="menu-subtitle">Boutique</span>
           <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
         </div>
 
         <ul className="nav-links">
-          <li><a href="/" onClick={() => setIsOpen(false)}>Home</a></li>
-          <li><a href="/explore" onClick={() => setIsOpen(false)}>Our Collection</a></li>
+          {/* Use handleNav for internal routes to avoid 404s */}
+          <li><button className="nav-item-btn" onClick={() => handleNav("/")}>Home</button></li>
+          <li><button className="nav-item-btn" onClick={() => handleNav("/explore")}>Our Collection</button></li>
+          
+          {/* Keep href for section anchors (#), but use useNavigate for pages */}
           <li><a href="#offers" onClick={() => setIsOpen(false)}>Special Offers</a></li>
           <li><a href="#about" onClick={() => setIsOpen(false)}>About Our Store</a></li>
           <li><a href="#contact" onClick={() => setIsOpen(false)}>Contact Us</a></li>
         </ul>
 
         <div className="menu-footer">
-          <Link to="/login" className="admin-link" onClick={() => setIsOpen(false)}>
-            Admin Portal
-          </Link>
+          <button className="admin-portal-link" onClick={() => handleNav("/login")}>
+            Admin Login
+          </button>
         </div>
       </aside>
 

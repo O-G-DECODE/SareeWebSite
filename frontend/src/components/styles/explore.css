@@ -189,69 +189,6 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
 }
-
-/* ─── Product Card ──────────────────────────────────────────── */
-.explore-app .product-card {
-  background: #fff;
-  border: 1px solid var(--parchment);
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-  cursor: pointer;
-}
-
-.explore-app .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-hover);
-}
-
-.explore-app .card-img-wrap {
-  position: relative;
-  aspect-ratio: 3/4;
-  overflow: hidden;
-}
-
-.explore-app .card-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.explore-app .product-card:hover .card-img {
-  transform: scale(1.05);
-}
-
-.explore-app .card-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--charcoal);
-  color: var(--gold-light);
-  font-size: 0.6rem;
-  padding: 3px 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.explore-app .card-body {
-  padding: 15px;
-}
-
-.explore-app .card-name {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  color: var(--charcoal);
-  margin-bottom: 5px;
-}
-
-.explore-app .card-price {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--maroon);
-}
-
 /* ─── Animations ────────────────────────────────────────────── */
 .explore-app .product-card-wrapper {
   animation: fadeInUp 0.5s ease forwards;
@@ -616,4 +553,133 @@ body {
   flex-shrink: 0;
   display: flex;
   align-items: center;
+}
+
+
+/* ============================================================
+   8. PRODUCT GRID (2-Columns on Mobile)
+   ============================================================ */
+
+/* The Parent Container (Apply this class to the div where you .map the cards) */
+.product-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Desktop */
+  gap: 25px;
+  padding: 20px;
+}
+
+/* THE CLASSIC CARD */
+.classic-product-card {
+  background: white;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.card-img-wrap {
+  position: relative;
+  aspect-ratio: 3 / 4; /* Maintains saree portrait shape */
+  overflow: hidden;
+  background: #f9f9f9;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  color: var(--deep-green);
+}
+
+.card-color-dot {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Keeps names on one line */
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-price {
+  font-weight: 700;
+  color: var(--theme-green-light);
+  font-size: 1rem;
+}
+
+.card-price-sub {
+  font-size: 0.65rem;
+  color: #aaa;
+  display: block;
+}
+
+.card-arrow {
+  color: var(--gold-light);
+  font-size: 1.2rem;
+}
+
+/* --- MOBILE SPECIFIC: 2 CARDS PER ROW --- */
+@media (max-width: 600px) {
+  .product-grid-container {
+    grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns */
+    gap: 12px; /* Tighter gap for small screens */
+    padding: 10px;
+  }
+
+  .card-name {
+    font-size: 0.95rem; /* Slightly smaller for mobile */
+  }
+
+  .card-body {
+    padding: 8px;
+  }
+
+  .card-price {
+    font-size: 0.9rem;
+  }
 }
