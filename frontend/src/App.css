@@ -92,7 +92,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-right: 25px;
+  margin-right: 8px;
 }
 
 .menu-icon-line {
@@ -123,7 +123,7 @@ body {
   transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1);
   display: flex;
   flex-direction: column;
-  padding: 40px;
+  padding: 30px;
   visibility: hidden;
 }
 
@@ -136,17 +136,22 @@ body {
 .menu-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 50px;
+  align-items: flex-start; /* Align to top */
+  margin-bottom: 40px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  padding-bottom: 15px;
+  padding-bottom: 20px;
 }
-
+.menu-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between Boutique text and Admin link */
+}
 .menu-subtitle {
   text-transform: uppercase;
   letter-spacing: 3px;
-  font-size: 0.75rem;
-  opacity: 0.6;
+  font-size: 0.7rem;
+  opacity: 0.5;
+  color: white;
 }
 
 .close-btn {
@@ -182,25 +187,30 @@ body {
 
 /* Fix for Admin Login (No more blue link) */
 .menu-footer {
-  margin-top: auto;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 25px;
+  display: none; 
 }
 
+/* Admin Portal Link - Now at top */
 .admin-portal-link {
-  color: var(--gold-light) !important; /* Forces color over default blue */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--gold-light) !important;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 500;
-  display: inline-block;
+  letter-spacing: 1.2px;
+  font-weight: 600;
+  text-align: left;
+  transition: 0.3s;
 }
 
 .admin-portal-link:hover {
-  text-decoration: underline;
   opacity: 0.8;
+  letter-spacing: 2px; /* Subtle expansion effect */
 }
+
 
 .overlay {
   position: fixed;
@@ -255,6 +265,10 @@ body {
 /* ============================================================
    3. HERO SECTION
    ============================================================ */
+
+   #Alignment{
+   padding: 20px;
+   }
 .hero-section {
   height: 90vh;
   display: flex;
@@ -282,8 +296,8 @@ body {
   background-color: #5F6F63;
   color: #ffffff;
   padding: 14px 32px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 400;
   letter-spacing: 1px;
   text-transform: uppercase;
   border: 2px solid var(--gold-light);

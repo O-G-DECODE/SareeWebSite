@@ -37,29 +37,28 @@ const Navbar = () => {
 
       {isOpen && <div className="overlay" onClick={() => setIsOpen(false)} />}
 
-      <aside className={`side-menu ${isOpen ? "open" : ""}`}>
-        <div className="menu-header">
-          <span className="menu-subtitle">Boutique</span>
-          <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
-        </div>
+     <aside className={`side-menu ${isOpen ? "open" : ""}`}>
+  <div className="menu-header">
+    <div className="menu-header-left">
+      <span className="menu-subtitle">Boutique</span>
+      {/* Admin Login moved to top for better visibility */}
+      <button className="admin-portal-link" onClick={() => handleNav("/login")}>
+        Admin Login
+      </button>
+    </div>
+    <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
+  </div>
 
-        <ul className="nav-links">
-          {/* Use handleNav for internal routes to avoid 404s */}
-          <li><button className="nav-item-btn" onClick={() => handleNav("/")}>Home</button></li>
-          <li><button className="nav-item-btn" onClick={() => handleNav("/explore")}>Our Collection</button></li>
-          
-          {/* Keep href for section anchors (#), but use useNavigate for pages */}
-          <li><a href="#offers" onClick={() => setIsOpen(false)}>Special Offers</a></li>
-          <li><a href="#about" onClick={() => setIsOpen(false)}>About Our Store</a></li>
-          <li><a href="#contact" onClick={() => setIsOpen(false)}>Contact Us</a></li>
-        </ul>
-
-        <div className="menu-footer">
-          <button className="admin-portal-link" onClick={() => handleNav("/login")}>
-            Admin Login
-          </button>
-        </div>
-      </aside>
+  <ul className="nav-links">
+    <li><button className="nav-item-btn" onClick={() => handleNav("/")}>Home</button></li>
+    <li><button className="nav-item-btn" onClick={() => handleNav("/explore")}>Our Collection</button></li>
+    <li><a href="#offers" onClick={() => setIsOpen(false)}>Special Offers</a></li>
+    <li><a href="#about" onClick={() => setIsOpen(false)}>About Us</a></li>
+    <li><a href="#contact" onClick={() => setIsOpen(false)}>Contact</a></li>
+  </ul>
+  
+  {/* menu-footer is now empty or can be removed if not needed */}
+</aside>
 
       <div className="navbar-spacer"></div>
     </>

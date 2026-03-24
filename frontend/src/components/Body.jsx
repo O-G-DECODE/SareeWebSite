@@ -7,6 +7,7 @@ const Body = () => {
   return (
     <main className="main-layout" id="home">
       {/* 1. Hero Section: The Grand Entrance */}
+      <div id="Alignment">
       <section className="hero-section">
         <div className="hero-content">
           <span className="hero-subtitle">Handpicked Elegance</span>
@@ -18,6 +19,7 @@ const Body = () => {
           </button>
         </div>
       </section>
+      </div>
 
       {/* 2. Categories Section: The Discovery Row */}
       <section className="category-showcase container-padding">
