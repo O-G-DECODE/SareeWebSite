@@ -78,10 +78,24 @@ body {
   font-size: 1.4rem;
   color: var(--deep-green);
   letter-spacing: 0.5px;
+  
+  /* THIS FORCES THE TEXT TO STAY AS A SINGLE LINE */
+  white-space: nowrap; 
+  
+  /* PREVENTS VERTICAL GAPS OR SHIFTING */
+  display: inline-block; 
+  margin: 0;
 }
 
 .logo-text span {
   color: var(--gold-light);
+}
+
+/* OPTIONAL: Shrink slightly for very small phones so it doesn't overlap the buttons */
+@media (max-width: 380px) {
+  .logo-text {
+    font-size: 1.1rem; 
+  }
 }
 
 /* Custom Hamburger */
@@ -91,7 +105,7 @@ body {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin-right: 8px;
 }
 

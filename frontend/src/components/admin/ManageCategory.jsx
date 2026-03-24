@@ -115,6 +115,7 @@ function ManageCategory() {
       <h2>Manage Category</h2>
 
       {/* SELECT */}
+      <form  className="admin-form">
       <select
         value={selectedCategoryId}
         onChange={(e) => handleSelect(e.target.value)}
@@ -124,8 +125,11 @@ function ManageCategory() {
           <option key={c._id} value={c._id}>
             {c.name}
           </option>
+          
         ))}
+        
       </select>
+      </form>
 
       {selectedCategoryId && (
         <form onSubmit={handleEdit} className="admin-form">
@@ -166,7 +170,7 @@ function ManageCategory() {
             type="button"
             onClick={handleDelete}
             disabled={loading}
-            style={{ marginLeft: "10px", color: "red" }}
+            style={{ marginLeft: "10px", color: "red" , padding:"10px" }}
           >
             {loading ? "Deleting..." : "Delete Category"}
           </button>

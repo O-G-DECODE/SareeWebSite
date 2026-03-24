@@ -24,7 +24,7 @@ const Body = () => {
       {/* 2. Categories Section: The Discovery Row */}
       <section className="category-showcase container-padding">
         <div className="section-header">
-          <h2 className="section-title">Major Categories</h2>
+          <h2 className="section-title">Bestsellers & New Arrivals</h2>
           <div className="title-underline"></div>
         </div>
         <SareeCards />
